@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="description" content="Holdnaptár — következő holdtölte, helyi égi adatok, sarki fény, ISS-áthaladások.">
-<title>Holdnaptár — következő holdtölte és égi események</title>
+<meta name="description" content="ÉgboltKémlelő — következő holdtölte, helyi égi adatok, sarki fény, ISS-áthaladások.">
+<title>ÉgboltKémlelő — következő holdtölte és égi események</title>
 <link rel="stylesheet" href="vendor/leaflet.css">
 <style>
 :root{--ground:#070C12;--panel:#101A24;--line:#22333F;--ink:#E8F1F7;--ink-title:#C2D2DE;--mute:#8195A6;--yel:#FFD24A;--cyan:#3DDCC8;--org:#FF9B3D;--red:#FF5470;--blue:#58B7F0;--sky:#9FE0FF;--ok:#5CE08A;--warn:#FFB020;
@@ -13,7 +13,7 @@
 background-image:radial-gradient(circle at 80% -10%,rgba(88,183,240,.10),transparent 45%),radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 70% 60%,#fff6,transparent),radial-gradient(1px 1px at 40% 80%,#fff5,transparent),radial-gradient(1px 1px at 90% 20%,#fff7,transparent)}
 .wrap{max-width:1180px;margin:0 auto;padding:22px 18px 40px}
 header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
-h1{margin:0;font-size:26px;letter-spacing:-.01em}h1 span{color:var(--yel)}
+h1{margin:0;font-size:26px;letter-spacing:-.01em}h1 .brand-a{color:var(--ink)}h1 .brand-b{color:var(--yel)}
 .sub{color:var(--mute);font-size:14px}.mono{font-family:var(--font-mono)}
 .live{font-family:var(--font-mono);font-size:12px;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em}
 .live:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cyan);margin-right:7px;box-shadow:0 0 8px var(--cyan);animation:p 2s infinite}
@@ -333,7 +333,7 @@ header{position:relative}
 <header>
   <svg class="hdr-art" aria-hidden="true" focusable="false"><use href="#ico-constellation"/></svg>
   <div>
-    <h1>Hold<span>naptár</span></h1>
+    <h1 id="brand"><span class="brand-a">Égbolt</span><span class="brand-b">Kémlelő</span></h1>
     <div class="sub" data-i18n="brand_sub">Holdfázisok, helyi égi adatok, sarki fény és ISS — helyi idő szerint</div>
     <div class="loc" id="locline">Hely: <b>betöltés…</b></div>
   </div>
@@ -1695,6 +1695,10 @@ function applyStaticI18n(){
   document.querySelectorAll('[data-i18n-aria]').forEach(el=>{
     el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
   });
+  const brand=document.getElementById('brand');
+  if(brand) brand.innerHTML='<span class="brand-a">'+t('brand_a')+'</span><span class="brand-b">'+t('brand_b')+'</span>';
+  const md=document.querySelector('meta[name="description"]');
+  if(md && t('meta_desc')) md.setAttribute('content', t('meta_desc'));
   const ll=document.getElementById('lang-label');
   if(ll) ll.textContent=t('lang_label');
   const oy=document.getElementById('lang-offer-yes');

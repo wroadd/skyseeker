@@ -1,10 +1,10 @@
-# Holdnaptár
+# ÉgboltKémlelő (SkySeeker)
 
 Statikus égi naptár: következő holdtöltek, helyi Nap/Hold/bolygó adatok, sarki fény (NOAA SWPC) és látható ISS-áthaladások — a böngészőben, a választott helyre (alapértelmezés: Budapest).
 
 **English:** [README.md](./README.md)
 
-**Élő demo:** https://wroadd.github.io/holdnaptar/
+**Élő demo:** https://wroadd.github.io/skyseeker/
 
 ![Képernyőkép](docs/screenshot.png)
 
@@ -44,7 +44,7 @@ Nyisd meg: http://localhost:4173/
 
 1. Forkold a repót
 2. Settings → Pages → branch: `main`, mappa: `/ (root)`
-3. A site: `https://<felhasználó>.github.io/holdnaptar/`
+3. A site: `https://<felhasználó>.github.io/skyseeker/`
 
 ## Esemény / szójegyzék / fordítás
 

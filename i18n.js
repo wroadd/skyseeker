@@ -1,4 +1,4 @@
-/* Holdnaptár i18n — hu / en / de
+/* ÉgboltKémlelő / SkySeeker i18n — hu / en / de
  * UI strings, glossary, moon names, and helpers.
  * Add languages by extending LANG_META + UI + GLOSSARY_I18N + MOON_I18N + EV texts.
  */
@@ -22,7 +22,10 @@ const LANG_META = {
 const COUNTRY_LANG = {"HU": "hu", "DE": "de", "AT": "de", "LI": "de", "GB": "en", "US": "en", "AU": "en", "NZ": "en", "IE": "en", "CA": "en"};
 const UI = {
   "hu": {
-    "title": "Holdnaptár — következő holdtölte és égi események",
+    "title": "ÉgboltKémlelő — következő holdtölte és égi események",
+    "meta_desc": "ÉgboltKémlelő — következő holdtölte, helyi égi adatok, sarki fény, ISS-áthaladások.",
+    "brand_a": "Égbolt",
+    "brand_b": "Kémlelő",
     "brand_sub": "Holdfázisok, helyi égi adatok, sarki fény és ISS — helyi idő szerint",
     "loc_prefix": "Hely:",
     "loc_edit_aria": "Hely módosítása térképen",
@@ -216,7 +219,10 @@ const UI = {
     "age_line": "kor: {age} nap · következő újhold: {date}"
   },
   "en": {
-    "title": "Moon Calendar — next full moon and sky events",
+    "title": "SkySeeker — next full moon and sky events",
+    "meta_desc": "SkySeeker — next full moon, local sky data, aurora, ISS passes.",
+    "brand_a": "Sky",
+    "brand_b": "Seeker",
     "brand_sub": "Moon phases, local sky data, aurora and ISS — in local time",
     "loc_prefix": "Location:",
     "loc_edit_aria": "Change location on the map",
@@ -410,7 +416,10 @@ const UI = {
     "age_line": "age: {age} days · next new moon: {date}"
   },
   "de": {
-    "title": "Mondkalender — nächster Vollmond und Himmelsereignisse",
+    "title": "SkySeeker — nächster Vollmond und Himmelsereignisse",
+    "meta_desc": "SkySeeker — nächster Vollmond, lokale Himmelsdaten, Polarlicht, ISS-Überflüge.",
+    "brand_a": "Sky",
+    "brand_b": "Seeker",
     "brand_sub": "Mondphasen, lokale Himmelsdaten, Polarlicht und ISS — Ortszeit",
     "loc_prefix": "Ort:",
     "loc_edit_aria": "Ort auf der Karte ändern",

@@ -1,10 +1,10 @@
-# Holdnaptár (Moon Calendar)
+# ÉgboltKémlelő / SkySeeker
 
 Static sky calendar for the next full moons, local Sun/Moon/planet data, aurora (NOAA SWPC), and visible ISS passes — computed in the browser for a chosen location (default Budapest).
 
 **Magyar leírás:** [README.hu.md](./README.hu.md)
 
-**Live demo:** https://wroadd.github.io/holdnaptar/
+**Live demo:** https://wroadd.github.io/skyseeker/
 
 ![Screenshot](docs/screenshot.png)
 
@@ -68,9 +68,9 @@ Open http://localhost:4173/
 
 ## Fork & GitHub Pages
 
-1. Fork https://github.com/wroadd/holdnaptar
+1. Fork https://github.com/wroadd/skyseeker
 2. Settings → Pages → Source: **Deploy from a branch** → `main` / `/ (root)`
-3. Wait for the Pages build; site will be at `https://<user>.github.io/holdnaptar/`
+3. Wait for the Pages build; site will be at `https://<user>.github.io/skyseeker/`
 
 ## Add events / glossary / translations
 
