@@ -1,0 +1,140 @@
+<!DOCTYPE html><html lang="hu"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Holdnaptár — következő holdtölte és égi események</title>
+<style>
+:root{--ground:#070C12;--panel:#101A24;--line:#22333F;--ink:#E8F1F7;--ink-title:#C2D2DE;--mute:#8195A6;--yel:#FFD24A;--cyan:#3DDCC8;--org:#FF9B3D;--red:#FF5470;--blue:#58B7F0;--sky:#9FE0FF;
+--font-sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace}
+*{box-sizing:border-box}body{margin:0;background:var(--ground);color:var(--ink);font-family:var(--font-sans);line-height:1.45;
+background-image:radial-gradient(circle at 80% -10%,rgba(88,183,240,.10),transparent 45%),radial-gradient(1px 1px at 20% 30%,#fff8,transparent),radial-gradient(1px 1px at 70% 60%,#fff6,transparent),radial-gradient(1px 1px at 40% 80%,#fff5,transparent),radial-gradient(1px 1px at 90% 20%,#fff7,transparent)}
+.wrap{max-width:1180px;margin:0 auto;padding:22px 18px 40px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;border-bottom:1px solid var(--line);padding-bottom:14px;margin-bottom:18px}
+h1{margin:0;font-size:26px;letter-spacing:-.01em}h1 span{color:var(--yel)}
+.sub{color:var(--mute);font-size:14px}.mono{font-family:var(--font-mono)}
+.live{font-family:var(--font-mono);font-size:12px;color:var(--cyan);text-transform:uppercase;letter-spacing:.08em}
+.live:before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--cyan);margin-right:7px;box-shadow:0 0 8px var(--cyan);animation:p 2s infinite}
+@keyframes p{50%{opacity:.35}}
+.grid{display:grid;grid-template-columns:1.4fr 1fr;gap:16px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:18px}
+.lbl{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--mute);margin-bottom:8px}
+h2{margin:0 0 4px;font-size:15px;color:var(--ink-title);font-weight:600}
+.big{font-size:34px;font-weight:700;color:var(--yel);letter-spacing:-.01em}
+.cd{display:flex;gap:10px;margin:14px 0 4px;flex-wrap:wrap}.cd div{background:var(--ground);border:1px solid var(--line);border-radius:8px;padding:8px 12px;min-width:74px;text-align:center}
+.cd b{display:block;font-family:var(--font-mono);font-size:26px;color:var(--ink)}.cd small{color:var(--mute);font-size:11px;text-transform:uppercase;letter-spacing:.08em}
+.tag{display:inline-block;font-family:var(--font-mono);font-size:11px;padding:2px 8px;border-radius:99px;border:1px solid;margin-right:6px}
+.hero{display:flex;gap:22px;align-items:center}.phase{display:flex;gap:18px;align-items:center}
+.stat{font-family:var(--font-mono);font-size:28px;color:var(--cyan)}
+.bar{height:6px;background:var(--line);border-radius:3px;margin-top:8px;overflow:hidden}.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--blue),var(--yel))}
+table{width:100%;border-collapse:collapse;font-size:14px}td{padding:7px 4px;border-bottom:1px solid var(--line)}td:last-child{text-align:right;color:var(--mute)}
+tr:first-child td{color:var(--yel)}
+.g2{grid-template-columns:1fr 1.6fr}.ev{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
+.e{background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--c);border-radius:8px;padding:12px 14px}
+.e .d{font-family:var(--font-mono);font-size:12px;color:var(--c)}.e h3{margin:3px 0 4px;font-size:15px}.e p{margin:0;font-size:13px;color:var(--ink-title)}
+.legend{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+footer{margin-top:24px;color:var(--mute);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
+footer a{color:var(--blue)}
+@media(max-width:820px){.grid,.g2{grid-template-columns:1fr}.cd div{min-width:64px;flex:1}.big{font-size:26px}.hero{flex-direction:column;align-items:flex-start}.ev{grid-template-columns:1fr}}
+</style></head><body><div class="wrap">
+<header><div><h1>Hold<span>naptár</span></h1><div class="sub">Holdfázisok és égi események — Budapesti idő szerint</div></div><div class="live" id="now">élő</div></header>
+<div class="grid">
+<section class="card"><div class="lbl">Következő holdtölte</div>
+<div class="hero"><svg id="fmsvg" width="120" height="120" viewBox="0 0 120 120"></svg><div>
+<h2 id="fmname"></h2><div class="big" id="fmdate"></div><div class="sub mono" id="fmtime"></div></div></div>
+<div class="cd"><div><b id="cdd">0</b><small>nap</small></div><div><b id="cdh">0</b><small>óra</small></div><div><b id="cdm">0</b><small>perc</small></div><div><b id="cds">0</b><small>mp</small></div></div>
+</section>
+<section class="card"><div class="lbl">A Hold most</div><div class="phase"><svg id="nowsvg" width="110" height="110" viewBox="0 0 120 120"></svg><div>
+<h2 id="phname"></h2><div class="stat" id="illum"></div><div class="sub">megvilágítottság · kor: <span class="mono" id="age"></span> nap</div><div class="bar"><i id="ibar"></i></div>
+<div class="sub" style="margin-top:8px">Következő újhold: <span class="mono" id="nm"></span></div></div></div></section>
+</div>
+<div class="grid g2" style="margin-top:16px">
+<section class="card"><div class="lbl">Következő 12 holdtölte</div><table id="list"></table></section>
+<section class="card"><div class="lbl">Csillagászati érdekességek · következő 12 hónap</div>
+<div class="legend"><span class="tag" style="color:var(--blue)">meteorraj</span><span class="tag" style="color:var(--red)">fogyatkozás</span><span class="tag" style="color:var(--org)">bolygó</span><span class="tag" style="color:var(--cyan)">napforduló / napéjegyenlőség</span><span class="tag" style="color:var(--yel)">Hold</span></div>
+<div class="ev" id="ev"></div></section>
+</div>
+<footer>Holdfázisok: Jean Meeus, <i>Astronomical Algorithms</i> (49. fejezet), böngészőben számolva (pontosság ~1 perc). Események forrásai: <a href="https://www.timeanddate.com/astronomy/sights-to-see.html">timeanddate.com</a>, <a href="https://www.whatthestar.com/planets">WhatTheStar</a>, <a href="https://cosmicmeridian.com/eclipses/">Cosmic Meridian</a>, <a href="https://www.cyclecalcs.com/astronomical-events-2027.html">CycleCalcs</a>. A Hold-nevek a hagyományos (észak-amerikai/európai) népi nevek magyarításai.</footer>
+</div>
+<script>
+const TZ='Europe/Budapest',R=Math.PI/180;
+function phaseJDE(k){const T=k/1236.85,T2=T*T,T3=T2*T,T4=T3*T;
+let jde=2451550.09766+29.530588861*k+0.00015437*T2-0.00000015*T3+0.00000000073*T4;
+const E=1-0.002516*T-0.0000074*T2,M=(2.5534+29.1053567*k-0.0000014*T2-0.00000011*T3)*R,
+Mp=(201.5643+385.81693528*k+0.0107582*T2+0.00001238*T3-0.000000058*T4)*R,
+F=(160.7108+390.67050284*k-0.0016118*T2-0.00000227*T3+0.000000011*T4)*R,
+O=(124.7746-1.56375588*k+0.0020672*T2+0.00000215*T3)*R,s=Math.sin,full=(k%1+1)%1>0.25;
+let c;if(full)c=-0.40614*s(Mp)+0.17302*E*s(M)+0.01614*s(2*Mp)+0.01043*s(2*F)+0.00734*E*s(Mp-M)-0.00515*E*s(Mp+M)+0.00209*E*E*s(2*M)-0.00111*s(Mp-2*F)-0.00057*s(Mp+2*F)+0.00056*E*s(2*Mp+M)-0.00042*s(3*Mp)+0.00042*E*s(M+2*F)+0.00038*E*s(M-2*F)-0.00024*E*s(2*Mp-M)-0.00017*s(O)-0.00007*s(Mp+2*M)+0.00004*s(2*Mp-2*F)+0.00004*s(3*M)+0.00003*s(Mp+M-2*F)+0.00003*s(2*Mp+2*F)-0.00003*s(Mp+M+2*F)+0.00003*s(Mp-M+2*F)-0.00002*s(Mp-M-2*F)-0.00002*s(3*Mp+M)+0.00002*s(4*Mp);
+else c=-0.40720*s(Mp)+0.17241*E*s(M)+0.01608*s(2*Mp)+0.01039*s(2*F)+0.00739*E*s(Mp-M)-0.00514*E*s(Mp+M)+0.00208*E*E*s(2*M)-0.00111*s(Mp-2*F)-0.00057*s(Mp+2*F)+0.00056*E*s(2*Mp+M)-0.00042*s(3*Mp)+0.00042*E*s(M+2*F)+0.00038*E*s(M-2*F)-0.00024*E*s(2*Mp-M)-0.00017*s(O)-0.00007*s(Mp+2*M)+0.00004*s(2*Mp-2*F)+0.00004*s(3*M)+0.00003*s(Mp+M-2*F)+0.00003*s(2*Mp+2*F)-0.00003*s(Mp+M+2*F)+0.00003*s(Mp-M+2*F)-0.00002*s(Mp-M-2*F)-0.00002*s(3*Mp+M)+0.00002*s(4*Mp);
+const A=[[299.77,0.107408,-0.009173,325],[251.88,0.016321,0,165],[251.83,26.651886,0,164],[349.42,36.412478,0,126],[84.66,18.206239,0,110],[141.74,53.303771,0,62],[207.14,2.453732,0,60],[154.84,7.30686,0,56],[34.52,27.261239,0,47],[207.19,0.121824,0,42],[291.34,1.844379,0,40],[161.72,24.198154,0,37],[239.56,25.513099,0,35],[331.55,3.592518,0,23]];
+let add=0;A.forEach(a=>add+=a[3]*1e-6*s((a[0]+a[1]*k+a[2]*T2)*R));
+return jde+c+add}
+const jdToDate=jde=>{const y=2000+(jde-2451545)/365.25,dT=62.92+0.32217*(y-2000)+0.005589*(y-2000)**2; // ΔT approx (s)
+return new Date((jde-2440587.5)*864e5-Math.min(dT,75)*1000)};
+const fmtD=d=>d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'long',day:'numeric',weekday:'long'});
+const fmtT=d=>d.toLocaleTimeString('hu-HU',{timeZone:TZ,hour:'2-digit',minute:'2-digit'});
+const monthBP=d=>+d.toLocaleString('en-US',{timeZone:TZ,month:'numeric'})-1;
+const NAMES=['Farkashold','Hóhold','Féreghold','Rózsaszín Hold','Virághold','Eperhold','Bakhold','Tokhalhold','Kukoricahold','Vadászhold','Hódhold','Hideghold'];
+function fullMoonsFrom(now,n){let k=Math.floor((now/864e5+2440587.5-2451550.09766)/29.530588861)-1+0.5,out=[];
+while(out.length<n){const d=jdToDate(phaseJDE(k));if(d>now)out.push(d);k++}return out}
+function nextNew(now){let k=Math.floor((now/864e5+2440587.5-2451550.09766)/29.530588861)-1;for(;;k++){const d=jdToDate(phaseJDE(k));if(d>now)return d}}
+function moonName(d){const y=d.getUTCFullYear(),m=monthBP(d);
+// Aratáshold: a szeptemberi napéjegyenlőséghez (≈szept. 23.) legközelebbi holdtölte
+const eq=Date.UTC(y,8,23);if(Math.abs(d-eq)<14.8*864e5)return 'Aratáshold';return NAMES[m]}
+function superm(d){ // a Hold távolsága a holdtöltekor (egyszerűsített Meeus 47. fejezet)
+const jd=d/864e5+2440587.5,T=(jd-2451545)/36525,Dd=(297.8501921+445267.1114034*T)*R,M=(357.5291092+35999.0502909*T)*R,Mp=(134.9633964+477198.8675055*T)*R,F=(93.272095+483202.0175233*T)*R;
+const r=385000.56-20905.355*Math.cos(Mp)-3699.111*Math.cos(2*Dd-Mp)-2955.968*Math.cos(2*Dd)-569.925*Math.cos(2*Mp)+48.888*Math.cos(M)+246.158*Math.cos(2*Dd-2*Mp)-152.138*Math.cos(2*Dd-M-Mp)-170.733*Math.cos(2*Dd+Mp)-204.586*Math.cos(2*Dd-M)-129.62*Math.cos(Mp-M)+108.743*Math.cos(Dd)+104.755*Math.cos(Mp+M);return r}
+function moonSVG(el,age){const f=age/29.530588861,ill=(1-Math.cos(2*Math.PI*f))/2,r=50,cx=60,cy=60;
+const rx=Math.abs(r*Math.cos(2*Math.PI*f)),waxing=f<0.5,cres=ill<0.5,sweepOuter=waxing?1:0,sweepInner=waxing?(cres?0:1):(cres?1:0);
+const p=`M${cx},${cy-r} A${r},${r} 0 0 ${sweepOuter} ${cx},${cy+r} A${rx},${r} 0 0 ${sweepInner} ${cx},${cy-r}Z`;
+el.innerHTML=`<defs><radialGradient id="g${el.id}" cx="40%" cy="35%"><stop offset="0" stop-color="#FFF6D6"/><stop offset="1" stop-color="#FFD24A"/></radialGradient><filter id="b${el.id}"><feGaussianBlur stdDeviation="4"/></filter></defs>
+<circle cx="60" cy="60" r="54" fill="#FFD24A" opacity="${.12*ill+.03}" filter="url(#b${el.id})"/><circle cx="60" cy="60" r="50" fill="#16222D" stroke="#22333F"/><path d="${p}" fill="url(#g${el.id})"/>
+<g fill="#000" opacity=".08"><circle cx="45" cy="45" r="8"/><circle cx="72" cy="70" r="11"/><circle cx="70" cy="38" r="5"/><circle cx="48" cy="78" r="6"/></g>`;return ill}
+const EV=[ // dátumok UTC; források: timeanddate, WhatTheStar, Cosmic Meridian, CycleCalcs, AstroTools
+['2026-11-17T22:00Z','m','Leonidák meteorraj maximuma','Nov. 17/18 éjjel, óránként kb. 15 meteor. A radiáns (Oroszlán) éjfél után emelkedik magasra.'],
+['2026-11-20T12:00Z','p','Merkúr legnagyobb nyugati kitérése','Hajnalban, napkelte előtt alacsonyan keleten kereshető — az év utolsó jó Merkúr-láthatósága.'],
+['2026-12-14T20:00Z','m','Geminidák meteorraj maximuma','Dec. 14/15 éjjel — az év egyik leglátványosabb hullócsillag-raja, akár 100+ meteor/óra ideális égen.'],
+['2026-12-21T20:50Z','s','Téli napforduló','21:50-kor (budapesti idő) — az év legrövidebb nappala, a csillagászati tél kezdete.'],
+['2026-12-22T12:00Z','m','Ursidák meteorraj','Dec. 22/23 körüli gyenge, északi raj (Kis Medve), óránként 5–10 meteor.'],
+['2026-12-24T01:00Z','l','Szuperhold — Hideghold','Az év egyetlen „szuper” teliholdja: a Hold közel van földközelpontjához, kissé nagyobbnak és fényesebbnek látszik.'],
+['2027-01-03T12:00Z','p','Vénusz legnagyobb nyugati kitérése','A Hajnalcsillag 47°-ra a Naptól, hajnalban ragyog keleten.'],
+['2027-01-03T22:00Z','m','Quadrantidák meteorraj','Jan. 3/4 éjjel, rövid, de erős csúcs (akár 120/óra), szinte holdfénymentes égen.'],
+['2027-01-22T12:00Z','l','Az év legnagyobb szuperholdja','A 2027-es év legközelebbi teliholdja.'],
+['2027-02-06T15:59Z','e','Gyűrűs napfogyatkozás','Dél-Amerikából és Nyugat-Afrikából látható — Magyarországról NEM látszik.'],
+['2027-02-11T00:24Z','p','Jupiter szembenállásban','Az Oroszlánban, −2,6 magnitúdóval egész éjjel látható — legjobb időszak távcsöves megfigyelésre.'],
+['2027-02-19T15:46Z','p','Mars szembenállásban','Az Oroszlánban, −1,2 magnitúdó, egész éjjel látható; a Jupiter közelében. A legjobb Mars-láthatóság 2029-ig.'],
+['2027-02-20T23:12Z','e','Félárnyékos holdfogyatkozás','Feb. 21. 00:12 (budapesti idő) körül; Magyarországról is látható, de az elhalványulás szabad szemmel alig észrevehető.'],
+['2027-02-22T18:00Z','p','Bolygóparádé','Mars, Jupiter, Szaturnusz, Uránusz és Neptunusz egyszerre az esti égen (ebből három szabad szemmel).'],
+['2027-03-20T12:00Z','s','Tavaszi napéjegyenlőség','Március 20. — a csillagászati tavasz kezdete, a nappal és az éjszaka közel egyenlő hosszú.'],
+['2027-04-22T12:00Z','m','Lyridák meteorraj','Ápr. 22/23 körül, óránként 10–20 meteor, a Lant csillagkép irányából.'],
+['2027-05-06T02:00Z','m','Éta Aquaridák meteorraj','Május 5/6 hajnalán; a Halley-üstökös porából. Hazánkból hajnalban, alacsonyan látható.'],
+['2027-05-07T18:44Z','p','Vénusz–Szaturnusz együttállás','Hajnalban, 36′ távolságra egymástól a keleti égen.'],
+['2027-06-21T12:00Z','s','Nyári napforduló','Június 21. — az év leghosszabb nappala, a csillagászati nyár kezdete.'],
+['2027-07-18T16:02Z','e','Félárnyékos holdfogyatkozás','Magyarországról gyakorlatilag nem figyelhető meg (a Hold a fogyatkozás idején még a horizont alatt van).'],
+['2027-08-02T10:06Z','e','Teljes napfogyatkozás (hazánkból részleges)','A teljesség sávja Spanyolországon, Észak-Afrikán és Egyiptomon át húzódik; Magyarországról délelőtt részleges fogyatkozás látszik. Csak napszűrővel nézd!'],
+['2027-08-12T20:00Z','m','Perseidák meteorraj','Aug. 12/13 éjjel — a nyár legnépszerűbb hullócsillag-raja, akár 60–100 meteor/óra.'],
+['2027-08-17T07:13Z','e','Félárnyékos holdfogyatkozás','Magyarországról nem látható (a Hold ekkor már lenyugodott).'],
+['2027-09-23T12:00Z','s','Őszi napéjegyenlőség','Szeptember 23. — a csillagászati ősz kezdete.'],
+['2027-10-08T18:00Z','m','Draconidák meteorraj','Okt. 8/9 este, a Sárkány csillagképből; általában gyenge, néha meglepetésszerű kitöréssel.'],
+['2027-10-18T00:27Z','p','Szaturnusz szembenállásban','Egész éjjel látható, a gyűrűk távcsővel szépen megfigyelhetők.'],
+['2027-10-21T22:00Z','m','Orionidák meteorraj','Okt. 21/22 körül, a Halley-üstökös másik meteorraja, óránként kb. 20 meteor.'],
+];
+const COL={m:'var(--blue)',e:'var(--red)',p:'var(--org)',s:'var(--cyan)',l:'var(--yel)'},TYP={m:'meteorraj',e:'fogyatkozás',p:'bolygó',s:'évszak',l:'Hold'};
+let FM=[];
+function render(){const now=new Date();
+FM=fullMoonsFrom(now,12);const f=FM[0];
+document.getElementById('fmname').textContent=moonName(f)+(superm(f)<360000?' · szuperhold':'');
+document.getElementById('fmdate').textContent=f.toLocaleDateString('hu-HU',{timeZone:TZ,month:'long',day:'numeric'});
+document.getElementById('fmtime').textContent=fmtD(f)+', '+fmtT(f)+' (budapesti idő)';
+moonSVG(document.getElementById('fmsvg'),14.77);
+document.getElementById('list').innerHTML=FM.map(d=>`<tr><td>${moonName(d)}${superm(d)<360000?' <span class="tag" style="color:var(--yel)">szuper</span>':''}</td><td class="mono">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'short',day:'numeric'})} ${fmtT(d)}</td></tr>`).join('');
+const nn=nextNew(now),prevNew=jdToDate(phaseJDE(Math.round((nn/864e5+2440587.5-2451550.09766)/29.530588861)-1)),age=(now-prevNew)/864e5;
+const ill=moonSVG(document.getElementById('nowsvg'),age);
+const fr=age/29.530588861,names=['Újhold','Növekvő sarló','Első negyed','Növekvő hold','Telihold','Fogyó hold','Utolsó negyed','Fogyó sarló'];
+document.getElementById('phname').textContent=names[Math.floor(fr*8+0.5)%8];
+document.getElementById('illum').textContent=(ill*100).toFixed(1)+' %';document.getElementById('ibar').style.width=(ill*100)+'%';
+document.getElementById('age').textContent=age.toFixed(1);document.getElementById('nm').textContent=nn.toLocaleDateString('hu-HU',{timeZone:TZ,month:'long',day:'numeric'})+' '+fmtT(nn);
+const startOfToday=now-12*3600e3;
+document.getElementById('ev').innerHTML=EV.filter(e=>new Date(e[0])>startOfToday&&new Date(e[0])<+now+370*864e5).map(e=>{const d=new Date(e[0]),showT=e[1]=='e'||e[0].endsWith(':50Z')||/:2\dZ|:0[2-9]Z|:12Z|:13Z|:44Z|:46Z/.test(e[0]);
+return `<div class="e" style="--c:${COL[e[1]]}"><div class="d">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'})}${showT?' · '+fmtT(d):''} · ${TYP[e[1]]}</div><h3>${e[2]}</h3><p>${e[3]}</p></div>`}).join('')||'<p class="sub">Nincs több rögzített esemény — frissítsd az eseménylistát.</p>'}
+function tick(){const now=new Date();if(!FM.length||now>FM[0])render();let s=Math.max(0,(FM[0]-now)/1000|0);
+cdd.textContent=s/86400|0;cdh.textContent=String((s%86400)/3600|0).padStart(2,'0');cdm.textContent=String((s%3600)/60|0).padStart(2,'0');cds.textContent=String(s%60).padStart(2,'0');
+document.getElementById('now').textContent=now.toLocaleString('hu-HU',{timeZone:TZ,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+render();tick();setInterval(tick,1000);setInterval(render,600000);
+</script></body></html>
