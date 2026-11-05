@@ -205,6 +205,14 @@ const UI = {
     "iss_below_now": "Jelenleg a horizont alatt",
     "err_satjs": "satellite.js hiányzik",
     "err_ae": "Astronomy Engine hiányzik",
+        "moon_age": "Holdkor",
+    "next_full_short": "Következő telihold",
+    "next_new_short": "Következő újhold",
+    "lunation_progress": "Ciklus állása",
+    "lunation_of": "{pct} % a szinodikus hónapból",
+    "in_countdown": "még {d} nap {h} óra",
+    "phase_hemisphere_n": "északi félteke nézet",
+    "phase_hemisphere_s": "déli félteke nézet",
     "age_line": "kor: {age} nap · következő újhold: {date}"
   },
   "en": {
@@ -391,6 +399,14 @@ const UI = {
     "iss_below_now": "Currently below the horizon",
     "err_satjs": "satellite.js missing",
     "err_ae": "Astronomy Engine missing",
+        "moon_age": "Moon age",
+    "next_full_short": "Next full moon",
+    "next_new_short": "Next new moon",
+    "lunation_progress": "Cycle progress",
+    "lunation_of": "{pct} % through the synodic month",
+    "in_countdown": "{d}d {h}h left",
+    "phase_hemisphere_n": "northern-hemisphere view",
+    "phase_hemisphere_s": "southern-hemisphere view",
     "age_line": "age: {age} days · next new moon: {date}"
   },
   "de": {
@@ -577,6 +593,14 @@ const UI = {
     "iss_below_now": "Derzeit unter dem Horizont",
     "err_satjs": "satellite.js fehlt",
     "err_ae": "Astronomy Engine fehlt",
+        "moon_age": "Mondalter",
+    "next_full_short": "Nächster Vollmond",
+    "next_new_short": "Nächster Neumond",
+    "lunation_progress": "Zyklusfortschritt",
+    "lunation_of": "{pct} % des synodischen Monats",
+    "in_countdown": "noch {d} T {h} Std",
+    "phase_hemisphere_n": "Ansicht Nordhalbkugel",
+    "phase_hemisphere_s": "Ansicht Südhalbkugel",
     "age_line": "Alter: {age} Tage · nächster Neumond: {date}"
   }
 };
