@@ -63,6 +63,17 @@ button.term[aria-expanded="true"]{border-bottom-color:var(--yel);color:var(--yel
 #gbub .gt{font-family:var(--font-mono);font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--cyan);margin:0 0 6px}
 #gbub .gx{position:absolute;top:6px;right:8px;background:transparent;border:0;color:var(--mute);font-size:18px;cursor:pointer;line-height:1;padding:4px}
 #gbub .arrow{position:absolute;width:10px;height:10px;background:#152433;border-left:1px solid var(--cyan);border-top:1px solid var(--cyan);transform:rotate(45deg)}
+#gbub .glink{margin-top:10px;padding-top:8px;border-top:1px solid var(--line);font-size:12px}
+#gbub .glink a{color:var(--cyan);text-decoration:none;border-bottom:1px dotted rgba(61,220,200,.45)}
+#gbub .glink a:hover{border-bottom-color:var(--cyan)}
+#gbub .glink .lang{color:var(--mute);font-size:11px;margin-left:4px}
+.ev-pager{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.ev-pager .range{font-family:var(--font-mono);font-size:12px;color:var(--cyan);letter-spacing:.04em;text-align:center;flex:1 1 auto}
+.ev-pager button{font-family:var(--font-mono);font-size:12px;background:var(--ground);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;min-height:40px}
+.ev-pager button:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
+.ev-pager button:disabled{opacity:.35;cursor:not-allowed}
+.ev-empty{color:var(--mute);font-size:14px;padding:8px 0}
+
 footer{margin-top:24px;color:var(--mute);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
 footer a{color:var(--blue)}
 @media(max-width:980px){.grid3{grid-template-columns:1fr}}
@@ -143,8 +154,13 @@ footer a{color:var(--blue)}
 
 <div class="grid g2" style="margin-top:16px">
 <section class="card"><div class="lbl">Következő 12 holdtölte</div><table id="list"></table></section>
-<section class="card"><div class="lbl">Csillagászati érdekességek · következő 12 hónap</div>
+<section class="card"><div class="lbl">Csillagászati érdekességek <span class="src">2 hónapos ablak · max. 12 hónap</span></div>
 <div class="legend"><span class="tag" style="color:var(--blue)">meteorraj</span><span class="tag" style="color:var(--red)">fogyatkozás</span><span class="tag" style="color:var(--org)">bolygó</span><span class="tag" style="color:var(--cyan)">napforduló / napéjegyenlőség</span><span class="tag" style="color:var(--yel)">Hold</span></div>
+<div class="ev-pager" role="navigation" aria-label="Események lapozása">
+  <button type="button" id="ev-prev" aria-label="Előző időszak">‹ Előző</button>
+  <div class="range" id="ev-range" aria-live="polite"></div>
+  <button type="button" id="ev-next" aria-label="Következő időszak">Következő ›</button>
+</div>
 <div class="ev" id="ev"></div></section>
 </div>
 
@@ -162,6 +178,7 @@ A pontozott, kattintható szavak magyarázatot nyitnak. Az EV eseménylistában 
   <div class="arrow" id="gbub-arrow" aria-hidden="true"></div>
   <div class="gt" id="gbub-t"></div>
   <div id="gbub-b"></div>
+  <div class="glink" id="gbub-l" hidden></div>
 </div>
 <script src="vendor/astronomy.browser.min.js"></script>
 <script src="vendor/satellite.min.js"></script>
@@ -192,7 +209,7 @@ const GLOSSARY = {
   csill_szurk: { title:'Csillagászati szürkület', aliases:['csillagászati szürkület','Csill. szürkület','csill. szürkület'], text:'A Nap −12° és −18° között. Vége után (−18° alatt) kezdődik a csillagászati éjszaka: az ég gyakorlatilag teljesen sötét, ideális a halvány objektumokhoz.' },
   aranyora: { title:'Aranyóra', aliases:['aranyóra','Aranyóra'], text:'Napnyugta (vagy napkelte) körüli periódus, amikor a Nap alacsony (kb. 6° felett a horizonton), és meleg, aranyló fényt ad — fotósok kedvence.' },
   kekora: { title:'Kék óra', aliases:['kék óra','Kék óra'], text:'Nem sokkal napnyugta után (vagy napkelte előtt), amikor a Nap kb. −4° és −8° között van: az ég mélykék, egyenletes fényű, mesterséges fények szépen kirajzolódnak.' },
-  szuperhold: { title:'Szuperhold', aliases:['szuperhold','Szuperhold'], text:'Telihold (néha újhold), amikor a Hold közel van a földközelponthoz (perigee), ezért kissé nagyobbnak és fényesebbnek látszik. A különbség szabad szemmel szerény (~10–14%).' },
+  szuperhold: { title:'Szuperhold', aliases:['szuperhold','Szuperhold'], text:'Telihold (néha újhold), amikor a Hold közel van a földközelponthoz (perigee), ezért kissé nagyobbnak és fényesebbnek látszik. A különbség szabad szemmel szerény (~10–14%).' , wiki:{url:'https://hu.wikipedia.org/wiki/Szuperhold', lang:'hu', label:'Szuperhold — Wikipédia'} },
   perigee: { title:'Földközelpont (perigee)', aliases:['földközelpont','perigee','Perigee'], text:'A Hold pályájának Földhöz legközelebbi pontja. Itt a Hold látszólagos átmérője a legnagyobb.' },
   apogee: { title:'Földtávolpont (apogee)', aliases:['földtávolpont','apogee','Apogee'], text:'A Hold pályájának Földtől legtávolabbi pontja. Ilyenkor a telihold kisebbnek tűnik („mikrohold”).' },
   napegyen: { title:'Napéjegyenlőség', aliases:['napéjegyenlőség','Napéjegyenlőség'], text:'Amikor a Nap az égbolton az égi egyenlítőt keresztezi (március és szeptember körül): a nappal és az éjszaka a Földön közel egyenlő hosszú. A csillagászati tavasz, illetve ősz kezdete.' },
@@ -211,6 +228,22 @@ const GLOSSARY = {
   iss: { title:'ISS', aliases:['ISS','Nemzetközi Űrállomás','űrállomás'], text:'A Nemzetközi Űrállomás (International Space Station) kb. 400 km magasan kering, ~90 percenként kerüli meg a Földet. Tiszta égen mozgó, fényes pontként látszik — nem villog, mint a csillagok.' },
   tle: { title:'TLE', aliases:['TLE'], text:'Two-Line Element: két soros pályaelem-készlet, amellyel a műhold közelítő helyzete számolható (SGP4 modell). A Celestrak és más katalógusok rendszeresen frissítik.' },
   athaladas: { title:'Áthaladás (pass)', aliases:['áthaladás','Áthaladás','pass'], text:'Az az időszak, amíg egy műhold a megfigyelő horizontja felett van. A „látható” ISS-áthaladáshoz sötét ég, megvilágított űrállomás és megfelelő max. magasság kell.' },
+
+  /* ---- Hagyományos teliholdnevek (főként észak-amerikai / Old Farmer’s Almanac hagyomány) ---- */
+  farkashold: { title:'Farkashold', aliases:['Farkashold','farkashold'], text:'Januári telihold. Az elnevezés észak-amerikai folklórból / az Old Farmer’s Almanac hagyományából származik: a farkasok hangos januári üvöltéséhez kötötték. Nem magyar néphagyomány.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  hohold: { title:'Hóhold', aliases:['Hóhold','hóhold'], text:'Februári telihold. Az erős havazásról kapta a nevét az észak-amerikai hagyományban (Snow Moon, Old Farmer’s Almanac).', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  fereghold: { title:'Féreghold', aliases:['Féreghold','féreghold'], text:'Márciusi telihold (Worm Moon). A talajolvadáskor megjelenő földigiliszta-aktivitáshoz kötötték; észak-amerikai / Farmer’s Almanac hagyomány.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  rozsaszin: { title:'Rózsaszín Hold', aliases:['Rózsaszín Hold','rózsaszín hold','Rózsaszín hold'], text:'Áprilisi telihold (Pink Moon). Nem a Hold színe: a korai vad flox (pink moss phlox) virágzásáról nevezték el az észak-amerikai hagyományban.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  viraghold: { title:'Virághold', aliases:['Virághold','virághold'], text:'Májusi telihold (Flower Moon): a tavaszi virágözönről az észak-amerikai holdnév-hagyomány szerint.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  eperhold: { title:'Eperhold', aliases:['Eperhold','eperhold'], text:'Júniusi telihold (Strawberry Moon): az erdei szamóca érésének idejéhez kötött észak-amerikai elnevezés.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  bakhold: { title:'Bakhold', aliases:['Bakhold','bakhold'], text:'Júliusi telihold (Buck Moon): a hím szarvasok új agancsnövekedéséhez kapcsolt észak-amerikai név.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  tokhalhold: { title:'Tokhalhold', aliases:['Tokhalhold','tokhalhold','Tokhal hold'], text:'Augusztusi telihold (Sturgeon Moon): a Nagy-tavak környékén ilyenkor könnyebben fogható tokhalról; Farmer’s Almanac / észak-amerikai hagyomány.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  kukoricahold: { title:'Kukoricahold', aliases:['Kukoricahold','kukoricahold'], text:'Szeptemberi telihold, ha nem esik az őszi napéjegyenlőség közelébe (akkor Aratáshold). A kukoricaaratáshoz kötött észak-amerikai név (Corn Moon).', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  aratashold: { title:'Aratáshold', aliases:['Aratáshold','aratáshold','Aratás holdja'], text:'Az őszi napéjegyenlőséghez legközelebbi telihold (Harvest Moon). Híres arról, hogy napnyugta után hamar felkel, így hosszabb esti fényt ad az aratáshoz — európai és észak-amerikai hagyomány is ismeri.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  vadaszhold: { title:'Vadászhold', aliases:['Vadászhold','vadászhold'], text:'Az Aratáshold utáni telihold (Hunter’s Moon), tipikusan októberben. A vadászati szezonhoz kötött elnevezés; észak-amerikai / európai folklór.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  hodhold: { title:'Hódhold', aliases:['Hódhold','hódhold'], text:'Novemberi telihold (Beaver Moon): a hódok téli gátépítésének / a hódszőrme-vadászat idejének észak-amerikai emlékneve.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  hideghold: { title:'Hideghold', aliases:['Hideghold','hideghold','Hideg hold'], text:'Decemberi telihold (Cold Moon): a hosszú, hideg téli éjszakákról az észak-amerikai holdnév-hagyományban.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
+  kekhold: { title:'Kékhold', aliases:['Kékhold','kékhold','Kék hold'], text:'Két gyakori jelentés: (1) modern naptári: a második telihold ugyanabban a naptári hónapban; (2) szezonális (Farmer’s Almanac): a négy teliholdas évszak harmadik teliholdja. Sem a Hold, sem az ég nem kék tőle.', wiki:{url:'https://en.wikipedia.org/wiki/Blue_moon', lang:'en', label:'Blue moon'} },
   sgp4: { title:'SGP4', aliases:['SGP4'], text:'Standard pályaterjesztő algoritmus alacsony Föld körüli műholdakhoz. A TLE-ből percek–napok távlatában jó közelítéssel megadja a műhold helyzetét.' }
 };
 
@@ -239,8 +272,32 @@ const NAMES=['Farkashold','Hóhold','Féreghold','Rózsaszín Hold','Virághold'
 function fullMoonsFrom(now,n){let k=Math.floor((now/864e5+2440587.5-2451550.09766)/29.530588861)-1+0.5,out=[];
 while(out.length<n){const d=jdToDate(phaseJDE(k));if(d>now)out.push(d);k++}return out}
 function nextNew(now){let k=Math.floor((now/864e5+2440587.5-2451550.09766)/29.530588861)-1;for(;;k++){const d=jdToDate(phaseJDE(k));if(d>now)return d}}
-function moonName(d){const y=d.getUTCFullYear(),m=monthBP(d);
-const eq=Date.UTC(y,8,23);if(Math.abs(d-eq)<14.8*864e5)return 'Aratáshold';return NAMES[m]}
+const MOON_TERM={
+  'Farkashold':'farkashold','Hóhold':'hohold','Féreghold':'fereghold','Rózsaszín Hold':'rozsaszin',
+  'Virághold':'viraghold','Eperhold':'eperhold','Bakhold':'bakhold','Tokhalhold':'tokhalhold',
+  'Kukoricahold':'kukoricahold','Vadászhold':'vadaszhold','Hódhold':'hodhold','Hideghold':'hideghold',
+  'Aratáshold':'aratashold','Kékhold':'kekhold'
+};
+function moonName(d, prev){
+  if(prev){
+    const a=d.toLocaleDateString('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit'});
+    const b=prev.toLocaleDateString('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit'});
+    if(a===b) return 'Kékhold';
+  }
+  const y=d.getUTCFullYear(),m=monthBP(d);
+  const eq=Date.UTC(y,8,23);if(Math.abs(d-eq)<14.8*864e5)return 'Aratáshold';
+  return NAMES[m];
+}
+function moonNameMarkup(d, prev){
+  const name=moonName(d, prev);
+  const key=MOON_TERM[name];
+  const isSuper=superm(d)<360000;
+  let html=key
+    ? `<button type="button" class="term" data-term="${key}" aria-expanded="false">${name}</button>`
+    : autoLinkTerms(name);
+  if(isSuper) html+=` · <button type="button" class="term" data-term="szuperhold" aria-expanded="false">szuperhold</button>`;
+  return html;
+}
 function superm(d){
 const jd=d/864e5+2440587.5,T=(jd-2451545)/36525,Dd=(297.8501921+445267.1114034*T)*R,M=(357.5291092+35999.0502909*T)*R,Mp=(134.9633964+477198.8675055*T)*R;
 const r=385000.56-20905.355*Math.cos(Mp)-3699.111*Math.cos(2*Dd-Mp)-2955.968*Math.cos(2*Dd)-569.925*Math.cos(2*Mp)+48.888*Math.cos(M)+246.158*Math.cos(2*Dd-2*Mp)-152.138*Math.cos(2*Dd-M-Mp)-170.733*Math.cos(2*Dd+Mp)-204.586*Math.cos(2*Dd-M)-129.62*Math.cos(Mp-M)+108.743*Math.cos(Dd)+104.755*Math.cos(Mp+M);return r}
@@ -289,10 +346,12 @@ const gbub=document.getElementById('gbub');
 const gbubT=document.getElementById('gbub-t');
 const gbubB=document.getElementById('gbub-b');
 const gbubArrow=document.getElementById('gbub-arrow');
+const gbubL=document.getElementById('gbub-l');
 
 function closeTerm(){
   if(_termOpenBtn){ _termOpenBtn.setAttribute('aria-expanded','false'); _termOpenBtn=null; }
   gbub.hidden=true; gbub.dataset.open='0';
+  if(gbubL){ gbubL.hidden=true; gbubL.innerHTML=''; }
 }
 function openTerm(btn){
   const key=btn.getAttribute('data-term');
@@ -303,6 +362,15 @@ function openTerm(btn){
   btn.setAttribute('aria-expanded','true');
   gbubT.textContent=g.title;
   gbubB.textContent=g.text;
+  if(g.wiki && g.wiki.url){
+    const langMark=g.wiki.lang==='en'?' <span class="lang">(angol)</span>':'';
+    const label=g.wiki.label||'Wikipédia';
+    gbubL.innerHTML=`<a href="${g.wiki.url}" target="_blank" rel="noopener noreferrer">${label}</a>${langMark}`;
+    gbubL.hidden=false;
+  } else {
+    gbubL.innerHTML='';
+    gbubL.hidden=true;
+  }
   gbub.hidden=false; gbub.dataset.open='1';
   // measure & position
   const br=btn.getBoundingClientRect();
@@ -411,26 +479,71 @@ function cell(k,v,cls,termKey){
   return `<div><div class="k">${label}</div><div class="v${cls?' '+cls:''}">${v}</div></div>`;
 }
 
+const HU_MONTHS=['január','február','március','április','május','június','július','augusztus','szeptember','október','november','december'];
+let evOffset=0;
+const EV_MAX_OFFSET=10; // 2-hó ablak; utolsó offset: +10/+11 ≈ 12 hó előre
+
+function ymOf(date){
+  const parts=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit'}).formatToParts(date);
+  return {y:+parts.find(p=>p.type==='year').value, m:+parts.find(p=>p.type==='month').value};
+}
+function addMonthsYM(ym,n){
+  let idx=ym.y*12+(ym.m-1)+n;
+  return {y:Math.floor(idx/12), m:(idx%12)+1};
+}
+function formatEvRange(startYM){
+  const endYM=addMonthsYM(startYM,1);
+  if(startYM.y===endYM.y)
+    return `${startYM.y}. ${HU_MONTHS[startYM.m-1]} – ${HU_MONTHS[endYM.m-1]}`;
+  return `${startYM.y}. ${HU_MONTHS[startYM.m-1]} – ${endYM.y}. ${HU_MONTHS[endYM.m-1]}`;
+}
+function eventInWindow(evDate, startYM){
+  const ym=ymOf(evDate);
+  const a=startYM.y*12+startYM.m;
+  const b=ym.y*12+ym.m;
+  return b>=a && b<a+2;
+}
+function renderEvents(){
+  const now=new Date();
+  const base=ymOf(now);
+  const startYM=addMonthsYM(base, evOffset);
+  const startOfToday=now-12*3600e3;
+  const horizon=addMonthsYM(base, 12);
+  document.getElementById('ev-range').textContent=formatEvRange(startYM);
+  document.getElementById('ev-prev').disabled=evOffset<=0;
+  document.getElementById('ev-next').disabled=evOffset>=EV_MAX_OFFSET;
+  const items=EV.filter(e=>{
+    const d=new Date(e[0]);
+    if(d<=startOfToday) return false;
+    const ym=ymOf(d);
+    if(ym.y*12+ym.m >= horizon.y*12+horizon.m) return false;
+    return eventInWindow(d, startYM);
+  });
+  const html=items.map(e=>{
+    const d=new Date(e[0]);
+    const showT=e[1]=='e'||e[0].endsWith(':50Z')||/:2\dZ|:0[2-9]Z|:12Z|:13Z|:44Z|:46Z/.test(e[0]);
+    return `<div class="e" style="--c:${COL[e[1]]}"><div class="d">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'})}${showT?' · '+fmtT(d):''} · ${TYP[e[1]]}</div><h3>${autoLinkTerms(e[2])}</h3><p>${autoLinkTerms(e[3])}</p></div>`;
+  }).join('');
+  document.getElementById('ev').innerHTML=html||'<p class="ev-empty">Nincs esemény ebben az időszakban</p>';
+}
+document.getElementById('ev-prev').addEventListener('click',()=>{ if(evOffset>0){ evOffset--; closeTerm(); renderEvents(); }});
+document.getElementById('ev-next').addEventListener('click',()=>{ if(evOffset<EV_MAX_OFFSET){ evOffset++; closeTerm(); renderEvents(); }});
+
 function renderMoonCards(){const now=new Date();
 FM=fullMoonsFrom(now,12);const f=FM[0];
-const isSuper=superm(f)<360000;
-document.getElementById('fmname').innerHTML=autoLinkTerms(moonName(f)+(isSuper?' · szuperhold':''));
+document.getElementById('fmname').innerHTML=moonNameMarkup(f, null);
 document.getElementById('fmdate').textContent=f.toLocaleDateString('hu-HU',{timeZone:TZ,month:'long',day:'numeric'});
 document.getElementById('fmtime').textContent=fmtD(f)+', '+fmtT(f)+' (budapesti idő)';
 moonSVG(document.getElementById('fmsvg'),14.77);
-document.getElementById('list').innerHTML=FM.map(d=>`<tr><td>${autoLinkTerms(moonName(d)+(superm(d)<360000?' · szuperhold':''))}</td><td class="mono">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'short',day:'numeric'})} ${fmtT(d)}</td></tr>`).join('');
+document.getElementById('list').innerHTML=FM.map((d,i)=>`<tr><td>${moonNameMarkup(d, i?FM[i-1]:null)}</td><td class="mono">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'short',day:'numeric'})} ${fmtT(d)}</td></tr>`).join('');
 const nn=nextNew(now),prevNew=jdToDate(phaseJDE(Math.round((nn/864e5+2440587.5-2451550.09766)/29.530588861)-1)),age=(now-prevNew)/864e5;
 const ill=moonSVG(document.getElementById('nowsvg'),age);
 const fr=age/29.530588861,names=['Újhold','Növekvő sarló','Első negyed','Növekvő hold','Telihold','Fogyó hold','Utolsó negyed','Fogyó sarló'];
 document.getElementById('phname').innerHTML=autoLinkTerms(names[Math.floor(fr*8+0.5)%8]);
 document.getElementById('illum').textContent=(ill*100).toFixed(1)+' %';document.getElementById('ibar').style.width=(ill*100)+'%';
 document.getElementById('age').textContent=age.toFixed(1);document.getElementById('nm').textContent=nn.toLocaleDateString('hu-HU',{timeZone:TZ,month:'long',day:'numeric'})+' '+fmtT(nn);
-const startOfToday=now-12*3600e3;
-document.getElementById('ev').innerHTML=EV.filter(e=>new Date(e[0])>startOfToday&&new Date(e[0])<+now+370*864e5).map(e=>{const d=new Date(e[0]),showT=e[1]=='e'||e[0].endsWith(':50Z')||/:2\\dZ|:0[2-9]Z|:12Z|:13Z|:44Z|:46Z/.test(e[0]);
-return `<div class="e" style="--c:${COL[e[1]]}"><div class="d">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'})}${showT?' · '+fmtT(d):''} · ${TYP[e[1]]}</div><h3>${autoLinkTerms(e[2])}</h3><p>${autoLinkTerms(e[3])}</p></div>`}).join('')||'<p class="sub">Nincs több rögzített esemény — frissítsd az eseménylistát.</p>';
-linkTermsInElement(document.getElementById('list'));
+renderEvents();
 }
-
 function tick(){const now=new Date();if(!FM.length||now>FM[0])renderMoonCards();let s=Math.max(0,(FM[0]-now)/1000|0);
 cdd.textContent=s/86400|0;cdh.textContent=String((s%86400)/3600|0).padStart(2,'0');cdm.textContent=String((s%3600)/60|0).padStart(2,'0');cds.textContent=String(s%60).padStart(2,'0');
 document.getElementById('now').textContent=now.toLocaleString('hu-HU',{timeZone:TZ,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
