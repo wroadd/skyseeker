@@ -160,10 +160,16 @@ footer a{color:var(--blue)}
 .lbl .ico{color:var(--cyan)}
 .lbl-with-ico{display:flex;align-items:center;gap:0;flex-wrap:wrap}
 .lbl-with-ico .src{float:none;margin-left:auto}
-.card-ico-wrap{position:relative}
-.iss-art{position:absolute;right:10px;top:8px;width:min(160px,42%);height:auto;color:var(--cyan);opacity:.28;pointer-events:none;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--cyan) 40%,transparent))}
-.iss-orbit{position:absolute;right:6px;top:4px;width:52px;height:52px;color:var(--yel);opacity:.22;pointer-events:none}
-@media(max-width:520px){.iss-art{opacity:.18;width:min(120px,48%)}.iss-orbit{display:none}}
+.iss-row{display:flex;align-items:center;justify-content:space-between;gap:14px;margin:8px 0 12px;min-width:0}
+.iss-row .iss-live{flex:1 1 auto;min-width:0;margin:0}
+.iss-art-wrap{flex:0 0 auto;display:flex;align-items:center;justify-content:flex-end;pointer-events:none;line-height:0}
+.iss-art{width:200px;height:auto;max-width:28vw;color:var(--cyan);opacity:.4;filter:drop-shadow(0 0 6px color-mix(in srgb,var(--cyan) 35%,transparent))}
+.iss-orbit{width:36px;height:36px;margin-right:-8px;color:var(--yel);opacity:.35}
+@media(max-width:900px){.iss-art{width:160px;opacity:.32}}
+@media(max-width:700px){.iss-art{width:120px;opacity:.28}.iss-orbit{display:none}}
+@media(max-width:520px){.iss-art-wrap{display:none}}
+/* glossary term labels inside kv match plain .k look */
+.kv .k button.term{text-transform:uppercase;letter-spacing:.08em;font-size:inherit;border-bottom-color:color-mix(in srgb,var(--sky) 70%,transparent)}
 .p-ico{width:32px;height:32px;flex:0 0 32px;color:var(--org);filter:drop-shadow(0 0 5px color-mix(in srgb,var(--org) 30%,transparent))}
 .plist li{align-items:center}
 .plist .pi{flex:1;min-width:0}
@@ -442,11 +448,15 @@ header{position:relative}
 </section>
 </div>
 
-<section class="card card-ico-wrap" id="card-iss" style="margin-top:16px">
-  <svg class="iss-orbit" aria-hidden="true" focusable="false"><use href="#ico-orbit"/></svg>
-  <svg class="iss-art" aria-hidden="true" focusable="false"><use href="#ico-iss"/></svg>
+<section class="card" id="card-iss" style="margin-top:16px">
   <div class="lbl lbl-with-ico"><svg class="ico" aria-hidden="true" focusable="false"><use href="#ico-iss"/></svg><span data-i18n="lbl_iss">ISS látható áthaladások</span> <span class="src">Celestrak TLE · satellite.js</span></div>
-  <div class="iss-live" id="iss-live"></div>
+  <div class="iss-row">
+    <div class="iss-live" id="iss-live"></div>
+    <div class="iss-art-wrap" aria-hidden="true">
+      <svg class="iss-orbit" focusable="false"><use href="#ico-orbit"/></svg>
+      <svg class="iss-art" focusable="false"><use href="#ico-iss"/></svg>
+    </div>
+  </div>
   <div class="loading" id="iss-status">Áthaladások számolása…</div>
   <div id="iss-table-wrap" hidden>
     <table class="iss-table"><thead><tr>
