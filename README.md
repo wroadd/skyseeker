@@ -18,6 +18,7 @@ Static sky calendar for the next full moons, local Sun/Moon/planet data, aurora 
 - Map location picker (Leaflet + OSM tiles + Nominatim search/reverse)
 - **i18n:** Hungarian, English, German (`i18n.js`); language selector in the header
 - Astronomical events list (2-month pager, editable translations)
+- **Original line-art illustrations** (ISS, planets, event categories, card headers, subtle header constellation) — inline SVG sprite, MIT, no third-party image hotlinking
 
 ## Language behaviour
 

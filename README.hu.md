@@ -18,6 +18,7 @@ Statikus égi naptár: következő holdtöltek, helyi Nap/Hold/bolygó adatok, s
 - Térképes helyválasztó (Leaflet + OSM + Nominatim)
 - **Nyelvek:** magyar, angol, német (`i18n.js`); választó a fejlécben
 - Csillagászati események (2 hónapos lapozó, fordítható szövegek)
+- **Eredeti vonalrajz illusztrációk** (ISS, bolygók, eseménykategóriák, kártyafejek, finom csillagkép a fejlécben) — beágyazott SVG sprite, MIT, nincs külső képhivatkozás
 
 ## Nyelv választása
 
