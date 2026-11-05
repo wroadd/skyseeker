@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="description" content="Holdnaptár — következő holdtölte, helyi égi adatok, sarki fény, ISS-áthaladások.">
 <title>Holdnaptár — következő holdtölte és égi események</title>
+<link rel="stylesheet" href="vendor/leaflet.css">
 <style>
 :root{--ground:#070C12;--panel:#101A24;--line:#22333F;--ink:#E8F1F7;--ink-title:#C2D2DE;--mute:#8195A6;--yel:#FFD24A;--cyan:#3DDCC8;--org:#FF9B3D;--red:#FF5470;--blue:#58B7F0;--sky:#9FE0FF;--ok:#5CE08A;--warn:#FFB020;
 --font-sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;--font-mono:ui-monospace,"SF Mono",SFMono-Regular,Menlo,Consolas,monospace}
@@ -73,6 +74,50 @@ button.term[aria-expanded="true"]{border-bottom-color:var(--yel);color:var(--yel
 .ev-pager button:hover:not(:disabled){border-color:var(--cyan);color:var(--cyan)}
 .ev-pager button:disabled{opacity:.35;cursor:not-allowed}
 .ev-empty{color:var(--mute);font-size:14px;padding:8px 0}
+
+
+
+.loc-name{appearance:none;background:transparent;border:0;padding:0;margin:0;font:inherit;color:var(--sky);font-weight:500;cursor:pointer;border-bottom:1px dotted rgba(159,224,255,.45);display:inline;line-height:inherit}
+.loc-name:hover{border-bottom-color:var(--sky);color:var(--yel)}
+.loc-name:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:2px}
+.loc-name .pin{display:inline-block;width:0.95em;height:0.95em;margin-right:0.28em;vertical-align:-0.12em;opacity:.9}
+.loc-name .pin svg{display:block;width:100%;height:100%}
+
+.loc-row{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 12px;margin-top:6px}
+.loc-row .loc{margin-top:0;flex:1 1 220px}
+.btn{font-family:var(--font-mono);font-size:12px;background:var(--ground);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:8px 12px;cursor:pointer;min-height:40px;line-height:1.2}
+.btn:hover{border-color:var(--cyan);color:var(--cyan)}
+.btn:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.btn.primary{background:rgba(61,220,200,.12);border-color:var(--cyan);color:var(--cyan)}
+.btn.primary:hover{background:rgba(61,220,200,.22)}
+.btn.ghost{background:transparent}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+#loc-modal{position:fixed;inset:0;z-index:2000;display:none;align-items:stretch;justify-content:center;padding:0;background:rgba(0,0,0,.62);backdrop-filter:blur(3px)}
+#loc-modal[data-open="1"]{display:flex}
+.loc-panel{background:var(--panel);border:1px solid var(--line);border-radius:0;width:100%;max-width:100%;height:100%;display:flex;flex-direction:column;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.55)}
+.loc-panel header{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:14px 16px;border-bottom:1px solid var(--line);margin:0;flex-wrap:nowrap}
+.loc-panel header h2{margin:0;font-size:16px;color:var(--ink-title)}
+.loc-body{padding:12px 16px;display:flex;flex-direction:column;gap:10px;flex:1;min-height:0}
+.loc-search{display:flex;gap:8px;flex-wrap:wrap}
+.loc-search input{flex:1 1 180px;min-height:40px;background:var(--ground);border:1px solid var(--line);border-radius:8px;color:var(--ink);padding:8px 12px;font:inherit}
+.loc-search input:focus{outline:2px solid var(--cyan);outline-offset:1px;border-color:var(--cyan)}
+#loc-map{flex:1 1 auto;min-height:240px;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:#0b1520}
+#loc-map.leaflet-container{font:inherit}
+/* dark-ish OSM while keeping labels readable */
+#loc-map .leaflet-tile-pane{filter:invert(1) hue-rotate(180deg) brightness(.9) contrast(1.05) saturate(.85)}
+#loc-map .leaflet-control-attribution{background:rgba(7,12,18,.75)!important;color:var(--mute)!important;font-size:10px}
+#loc-map .leaflet-control-attribution a{color:var(--blue)!important}
+#loc-map .leaflet-control-zoom a{background:var(--panel)!important;color:var(--ink)!important;border-color:var(--line)!important}
+.loc-meta{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;font-family:var(--font-mono);font-size:12px;color:var(--mute)}
+.loc-meta b{color:var(--sky);font-weight:500}
+.loc-actions{display:flex;flex-wrap:wrap;gap:8px;padding:12px 16px;border-top:1px solid var(--line);justify-content:flex-end}
+.loc-status{font-size:12px;color:var(--mute);min-height:1.2em}
+.loc-status.err{color:var(--red)}
+@media(min-width:720px){
+  #loc-modal{padding:24px;align-items:center}
+  .loc-panel{border-radius:12px;width:min(720px,100%);height:min(860px,calc(100vh - 48px));max-height:calc(100vh - 48px)}
+  #loc-map{min-height:360px}
+}
 
 footer{margin-top:24px;color:var(--mute);font-size:12px;border-top:1px solid var(--line);padding-top:12px}
 footer a{color:var(--blue)}
@@ -168,11 +213,41 @@ footer a{color:var(--blue)}
 Holdfázisok (lista): Jean Meeus, <i>Astronomical Algorithms</i> (49. fejezet), böngészőben számolva (pontosság ~1 perc).
 Helyi Nap/Hold/bolygó: <a href="https://github.com/cosinekitty/astronomy">Astronomy Engine</a> (MIT).
 ISS: TLE a <a href="https://celestrak.org/">Celestrak</a> forrásból, pályaszámítás: <a href="https://github.com/shashwatak/satellite-js">satellite.js</a> (MIT, SGP4).
-Űridőjárás: <a href="https://www.swpc.noaa.gov/">NOAA SWPC</a>. Felhőzet: <a href="https://open-meteo.com/">Open-Meteo</a>.
+Űridőjárás: <a href="https://www.swpc.noaa.gov/">NOAA SWPC</a>. Felhőzet: <a href="https://open-meteo.com/">Open-Meteo</a>. Térkép: <a href="https://leafletjs.com/">Leaflet</a> (BSD-2), csempék © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.
 Események: <a href="https://www.timeanddate.com/astronomy/sights-to-see.html">timeanddate.com</a>, WhatTheStar, Cosmic Meridian, CycleCalcs.
 A pontozott, kattintható szavak magyarázatot nyitnak. Az EV eseménylistában opcionális jelölés: <span class="mono">[[kulcs|megjelenő szöveg]]</span> — lásd a forráskódban a GLOSSARY kommentet.
 </footer>
 </div>
+
+<div id="loc-modal" role="dialog" aria-modal="true" aria-labelledby="loc-modal-title" data-open="0" hidden>
+  <div class="loc-panel" role="document">
+    <header>
+      <h2 id="loc-modal-title">Hely kiválasztása</h2>
+      <button type="button" class="btn ghost" id="loc-close" aria-label="Bezárás">×</button>
+    </header>
+    <div class="loc-body">
+      <form class="loc-search" id="loc-search-form" autocomplete="off">
+        <input type="search" id="loc-q" name="q" placeholder="Település keresése…" aria-label="Település keresése" enterkeyhint="search">
+        <button type="submit" class="btn" id="loc-search-btn">Keresés</button>
+      </form>
+      <div id="loc-map" aria-label="Térkép a hely kiválasztásához"></div>
+      <div class="loc-meta">
+        <span>Koordináták: <b id="loc-coords">—</b></span>
+        <span>Név: <b id="loc-pick-name">—</b></span>
+      </div>
+      <div class="loc-status" id="loc-status" aria-live="polite"></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px">
+        <button type="button" class="btn" id="loc-geo">Saját helyem</button>
+        <button type="button" class="btn ghost" id="loc-auto">Vissza az automatikus helyhez</button>
+      </div>
+    </div>
+    <div class="loc-actions">
+      <button type="button" class="btn" id="loc-cancel">Mégse</button>
+      <button type="button" class="btn primary" id="loc-save">Mentés</button>
+    </div>
+  </div>
+</div>
+
 <div id="gbub" role="dialog" aria-modal="false" aria-label="Fogalom magyarázata" hidden>
   <button type="button" class="gx" id="gbub-x" aria-label="Bezárás">×</button>
   <div class="arrow" id="gbub-arrow" aria-hidden="true"></div>
@@ -248,7 +323,8 @@ const GLOSSARY = {
 };
 
 const TZ='Europe/Budapest',R=Math.PI/180;
-const DEFAULT_LAT=47.4979, DEFAULT_LON=19.0402, DEFAULT_NAME='Budapest (alapértelmezett)';
+const DEFAULT_LAT=47.4979, DEFAULT_LON=19.0402, DEFAULT_NAME='Budapest';
+const LOC_STORAGE_KEY='holdnaptar.loc.v1';
 let LOC={lat:DEFAULT_LAT,lon:DEFAULT_LON,elev:120,name:DEFAULT_NAME,source:'default'};
 
 function phaseJDE(k){const T=k/1236.85,T2=T*T,T3=T2*T,T4=T3*T;
@@ -548,14 +624,30 @@ function tick(){const now=new Date();if(!FM.length||now>FM[0])renderMoonCards();
 cdd.textContent=s/86400|0;cdh.textContent=String((s%86400)/3600|0).padStart(2,'0');cdm.textContent=String((s%3600)/60|0).padStart(2,'0');cds.textContent=String(s%60).padStart(2,'0');
 document.getElementById('now').textContent=now.toLocaleString('hu-HU',{timeZone:TZ,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
 
+const PIN_SVG=`<span class="pin" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg></span>`;
+
+function formatCoords(lat, lon){
+  return `${lat.toFixed(4)}°${lat>=0?'N':'S'}, ${Math.abs(lon).toFixed(4)}°${lon>=0?'E':'W'}`;
+}
+function displayPlaceName(loc){
+  if(loc && loc.name) return loc.name;
+  if(loc) return formatCoords(loc.lat, loc.lon);
+  return '—';
+}
 function updateLocLine(){
-  const coords=`${LOC.lat.toFixed(4)}°N, ${Math.abs(LOC.lon).toFixed(4)}°${LOC.lon>=0?'E':'W'}`;
+  const coords=formatCoords(LOC.lat, LOC.lon);
   let note='';
-  if(LOC.source==='geo') note='böngésző geolokációja';
+  if(LOC.source==='saved') note='mentett hely (térkép)';
+  else if(LOC.source==='geo') note='böngésző geolokációja';
   else if(LOC.source==='denied') note='helymeghatározás megtagadva — Budapest alapértelmezés';
   else if(LOC.source==='error') note='helymeghatározás sikertelen — Budapest alapértelmezés';
   else note='Budapest alapértelmezés';
-  document.getElementById('locline').innerHTML=`Hely: <b>${LOC.name}</b> · <span class="mono">${coords}</span><br><span style="opacity:.85">${note}</span>`;
+  const name=displayPlaceName(LOC);
+  document.getElementById('locline').innerHTML=
+    `Hely: <button type="button" class="loc-name" id="loc-edit" aria-haspopup="dialog" aria-controls="loc-modal" aria-label="Hely módosítása térképen">${PIN_SVG}${name}</button>`+
+    ` · <span class="mono">${coords}</span><br><span style="opacity:.85">${note}</span>`;
+  const btn=document.getElementById('loc-edit');
+  if(btn) btn.addEventListener('click', openLocPicker);
 }
 
 function observer(){return new Astronomy.Observer(LOC.lat, LOC.lon, LOC.elev||0)}
@@ -1008,29 +1100,293 @@ async function renderISS(){
   }
 }
 
-function resolveLocation(){
+function loadSavedLocation(){
+  try{
+    const raw=localStorage.getItem(LOC_STORAGE_KEY);
+    if(!raw) return null;
+    const o=JSON.parse(raw);
+    if(typeof o.lat!=='number'||typeof o.lon!=='number') return null;
+    if(!isFinite(o.lat)||!isFinite(o.lon)||Math.abs(o.lat)>90||Math.abs(o.lon)>180) return null;
+    return {
+      lat:o.lat, lon:o.lon, elev: typeof o.elev==='number'?o.elev:120,
+      name: (o.name && String(o.name).trim()) || formatCoords(o.lat,o.lon),
+      source:'saved'
+    };
+  }catch(_){ return null; }
+}
+function saveLocation(loc){
+  localStorage.setItem(LOC_STORAGE_KEY, JSON.stringify({
+    lat:loc.lat, lon:loc.lon, elev:loc.elev||120, name:loc.name||''
+  }));
+}
+function clearSavedLocation(){ try{ localStorage.removeItem(LOC_STORAGE_KEY); }catch(_){} }
+
+function browserGeo(){
   return new Promise(resolve=>{
     if(!navigator.geolocation){
-      LOC={lat:DEFAULT_LAT,lon:DEFAULT_LON,elev:120,name:DEFAULT_NAME,source:'error'};
-      resolve(); return;
+      resolve({lat:DEFAULT_LAT,lon:DEFAULT_LON,elev:120,name:DEFAULT_NAME,source:'error'});
+      return;
     }
     navigator.geolocation.getCurrentPosition(
       pos=>{
-        LOC={lat:pos.coords.latitude, lon:pos.coords.longitude,
-             elev:pos.coords.altitude||120,
-             name:`${pos.coords.latitude.toFixed(2)}°, ${pos.coords.longitude.toFixed(2)}°`,
-             source:'geo'};
-        resolve();
+        resolve({
+          lat:pos.coords.latitude, lon:pos.coords.longitude,
+          elev:pos.coords.altitude||120,
+          name:null, source:'geo'
+        });
       },
       err=>{
-        LOC={lat:DEFAULT_LAT,lon:DEFAULT_LON,elev:120,name:DEFAULT_NAME,
-             source: err && err.code===1 ? 'denied' : 'error'};
-        resolve();
+        resolve({
+          lat:DEFAULT_LAT,lon:DEFAULT_LON,elev:120,name:DEFAULT_NAME,
+          source: err && err.code===1 ? 'denied' : 'error'
+        });
       },
       {enableHighAccuracy:false, timeout:8000, maximumAge:600000}
     );
   });
 }
+
+async function resolveLocation(){
+  const saved=loadSavedLocation();
+  if(saved){ LOC=saved; return; }
+  const geo=await browserGeo();
+  if(geo.source==='geo'){
+    const name=await reverseGeocode(geo.lat, geo.lon) || formatCoords(geo.lat, geo.lon);
+    LOC={...geo, name};
+  } else {
+    LOC=geo;
+  }
+}
+
+function refreshLocationDependent(){
+  updateLocLine();
+  renderLocalSky();
+  renderAurora();
+  renderISS();
+}
+
+async function applyLocation(loc, {persist}={persist:true}){
+  LOC={
+    lat:loc.lat, lon:loc.lon, elev:loc.elev||120,
+    name:loc.name || formatCoords(loc.lat, loc.lon),
+    source: loc.source || (persist ? 'saved' : 'geo')
+  };
+  if(persist) saveLocation(LOC);
+  refreshLocationDependent();
+}
+
+/* ---- Nominatim (search on submit; reverse on pick; ≤1 req/s) ---- */
+let _nomLast=0, _nomQueue=Promise.resolve(), _nomCorsOk=null;
+function nominatimWait(){
+  return new Promise(res=>{
+    const gap=Math.max(0, 1100-(_nomLast?Date.now()-_nomLast:1100));
+    setTimeout(()=>{ _nomLast=Date.now(); res(); }, gap);
+  });
+}
+function nominatimFetch(url){
+  const run=async()=>{
+    await nominatimWait();
+    const r=await fetch(url, {headers:{'Accept':'application/json'}});
+    if(!r.ok) throw new Error('Nominatim HTTP '+r.status);
+    return r.json();
+  };
+  const p=_nomQueue.then(run, run);
+  _nomQueue=p.then(()=>{},()=>{});
+  return p;
+}
+async function probeNominatimCors(){
+  if(_nomCorsOk!==null) return _nomCorsOk;
+  try{
+    const u='https://nominatim.openstreetmap.org/reverse?lat=47.5&lon=19.04&format=json&zoom=3&accept-language=hu';
+    await nominatimFetch(u);
+    _nomCorsOk=true;
+  }catch(_){ _nomCorsOk=false; }
+  return _nomCorsOk;
+}
+function placeLabelFromNom(j){
+  if(!j) return null;
+  const a=j.address||{};
+  return a.city||a.town||a.village||a.municipality||a.hamlet||a.suburb||a.county||a.state||j.name||null;
+}
+async function reverseGeocode(lat, lon){
+  if(!(await probeNominatimCors())) return null;
+  try{
+    const u=`https://nominatim.openstreetmap.org/reverse?lat=${lat.toFixed(5)}&lon=${lon.toFixed(5)}&format=json&zoom=12&accept-language=hu`;
+    const j=await nominatimFetch(u);
+    return placeLabelFromNom(j);
+  }catch(_){ return null; }
+}
+async function searchPlace(q){
+  if(!(await probeNominatimCors())) return {ok:false, reason:'cors'};
+  const u=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=hu`;
+  const arr=await nominatimFetch(u);
+  if(!arr||!arr.length) return {ok:false, reason:'empty'};
+  const hit=arr[0];
+  return {ok:true, lat:+hit.lat, lon:+hit.lon, name:placeLabelFromNom(hit)||hit.display_name||q};
+}
+
+/* ---- Map picker (Leaflet lazy: tiles only when opened) ---- */
+let _map=null, _marker=null, _leafletLoading=null, _pick={lat:DEFAULT_LAT,lon:DEFAULT_LON,name:DEFAULT_NAME}, _locPrevFocus=null;
+
+function loadLeaflet(){
+  if(window.L) return Promise.resolve();
+  if(_leafletLoading) return _leafletLoading;
+  _leafletLoading=new Promise((resolve,reject)=>{
+    const s=document.createElement('script');
+    s.src='vendor/leaflet.js';
+    s.onload=()=>resolve();
+    s.onerror=()=>reject(new Error('Leaflet betöltése sikertelen'));
+    document.head.appendChild(s);
+  });
+  return _leafletLoading;
+}
+
+function setLocStatus(msg, isErr){
+  const el=document.getElementById('loc-status');
+  if(!el) return;
+  el.textContent=msg||'';
+  el.classList.toggle('err', !!isErr);
+}
+function syncPickUI(){
+  document.getElementById('loc-coords').textContent=formatCoords(_pick.lat,_pick.lon);
+  document.getElementById('loc-pick-name').textContent=_pick.name||formatCoords(_pick.lat,_pick.lon);
+}
+async function setPick(lat, lon, {name, reverse}={}){
+  _pick.lat=lat; _pick.lon=lon;
+  if(name) _pick.name=name;
+  else if(reverse!==false){
+    _pick.name=formatCoords(lat,lon);
+    syncPickUI();
+    const n=await reverseGeocode(lat, lon);
+    if(n && Math.abs(_pick.lat-lat)<1e-9 && Math.abs(_pick.lon-lon)<1e-9) _pick.name=n;
+  } else if(!_pick.name) _pick.name=formatCoords(lat,lon);
+  syncPickUI();
+  if(_marker) _marker.setLatLng([lat,lon]);
+  if(_map) _map.panTo([lat,lon]);
+}
+
+function ensureMap(){
+  if(_map){ setTimeout(()=>_map.invalidateSize(), 50); return; }
+  L.Icon.Default.imagePath='vendor/images/';
+  _map=L.map('loc-map', {zoomControl:true, attributionControl:true})
+    .setView([_pick.lat,_pick.lon], 6);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom:19,
+    attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(_map);
+  _marker=L.marker([_pick.lat,_pick.lon], {draggable:true}).addTo(_map);
+  _marker.on('dragend', async()=>{
+    const ll=_marker.getLatLng();
+    await setPick(ll.lat, ll.lng, {reverse:true});
+  });
+  _map.on('click', async(e)=>{
+    await setPick(e.latlng.lat, e.latlng.lng, {reverse:true});
+  });
+  setTimeout(()=>_map.invalidateSize(), 80);
+}
+
+function locFocusables(){
+  const m=document.getElementById('loc-modal');
+  return [...m.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])')]
+    .filter(el=>!el.disabled && el.offsetParent!==null);
+}
+function onLocKey(e){
+  if(e.key==='Escape'){ e.preventDefault(); closeLocPicker(false); return; }
+  if(e.key!=='Tab') return;
+  const list=locFocusables();
+  if(!list.length) return;
+  const first=list[0], last=list[list.length-1];
+  if(e.shiftKey && document.activeElement===first){ e.preventDefault(); last.focus(); }
+  else if(!e.shiftKey && document.activeElement===last){ e.preventDefault(); first.focus(); }
+}
+
+async function openLocPicker(){
+  const modal=document.getElementById('loc-modal');
+  if(modal.dataset.open==='1') return;
+  _locPrevFocus=document.activeElement;
+  _pick={lat:LOC.lat, lon:LOC.lon, name:LOC.name||formatCoords(LOC.lat,LOC.lon)};
+  syncPickUI();
+  setLocStatus('');
+  modal.hidden=false; modal.dataset.open='1';
+  document.addEventListener('keydown', onLocKey, true);
+  try{
+    await loadLeaflet();
+    ensureMap();
+    if(_map){ _map.setView([_pick.lat,_pick.lon], Math.max(_map.getZoom(), 6)); _marker.setLatLng([_pick.lat,_pick.lon]); }
+  }catch(e){
+    setLocStatus('A térkép nem tölthető be. '+((e&&e.message)||''), true);
+  }
+  // hide search if Nominatim CORS fails
+  const ok=await probeNominatimCors();
+  document.getElementById('loc-search-form').hidden=!ok;
+  if(!ok) setLocStatus('A helynév-keresés ehhez a böngészőhöz nem elérhető; kattints a térképre.', false);
+  const q=document.getElementById('loc-q');
+  (ok?q:document.getElementById('loc-save')).focus();
+}
+
+function closeLocPicker(restoreFocus=true){
+  const modal=document.getElementById('loc-modal');
+  modal.dataset.open='0'; modal.hidden=true;
+  document.removeEventListener('keydown', onLocKey, true);
+  if(restoreFocus && _locPrevFocus && _locPrevFocus.focus) try{ _locPrevFocus.focus(); }catch(_){}
+}
+
+document.getElementById('loc-close').addEventListener('click', ()=>closeLocPicker(true));
+document.getElementById('loc-cancel').addEventListener('click', ()=>closeLocPicker(true));
+document.getElementById('loc-modal').addEventListener('click', e=>{
+  if(e.target.id==='loc-modal') closeLocPicker(true);
+});
+document.getElementById('loc-save').addEventListener('click', async()=>{
+  setLocStatus('Mentés…');
+  let name=_pick.name;
+  if(!name || name===formatCoords(_pick.lat,_pick.lon)){
+    name=await reverseGeocode(_pick.lat,_pick.lon) || formatCoords(_pick.lat,_pick.lon);
+  }
+  await applyLocation({lat:_pick.lat, lon:_pick.lon, elev:LOC.elev||120, name, source:'saved'}, {persist:true});
+  closeLocPicker(true);
+});
+document.getElementById('loc-geo').addEventListener('click', async()=>{
+  setLocStatus('Hely lekérése…');
+  const geo=await browserGeo();
+  if(geo.source!=='geo'){
+    setLocStatus(geo.source==='denied'?'A böngésző nem adta meg a helyet.':'Helymeghatározás sikertelen.', true);
+    return;
+  }
+  await setPick(geo.lat, geo.lon, {reverse:true});
+  if(_map) _map.setView([geo.lat, geo.lon], 10);
+  setLocStatus('Saját hely beállítva — mentsd el a Mentés gombbal.');
+});
+document.getElementById('loc-auto').addEventListener('click', async()=>{
+  clearSavedLocation();
+  closeLocPicker(true);
+  setLocStatus('');
+  updateLocLine();
+  document.getElementById('locline').querySelector('.loc-name')?.blur();
+  // re-resolve geo/fallback and refresh
+  LOC={lat:DEFAULT_LAT,lon:DEFAULT_LON,elev:120,name:DEFAULT_NAME,source:'default'};
+  updateLocLine();
+  await resolveLocation();
+  refreshLocationDependent();
+});
+document.getElementById('loc-search-form').addEventListener('submit', async(e)=>{
+  e.preventDefault();
+  const q=document.getElementById('loc-q').value.trim();
+  if(!q) return;
+  setLocStatus('Keresés…');
+  try{
+    const r=await searchPlace(q);
+    if(!r.ok){
+      setLocStatus(r.reason==='cors'?'Keresés nem elérhető.':'Nincs találat.', true);
+      return;
+    }
+    await setPick(r.lat, r.lon, {name:r.name, reverse:false});
+    if(_map) _map.setView([r.lat, r.lon], 11);
+    setLocStatus('Találat: '+(r.name||formatCoords(r.lat,r.lon)));
+  }catch(err){
+    setLocStatus('Keresési hiba.', true);
+    console.error(err);
+  }
+});
 
 async function bootLive(){
   updateLocLine();
@@ -1039,7 +1395,6 @@ async function bootLive(){
   renderLocalSky();
   renderAurora();
   renderISS();
-  // glossary on static bits
   document.querySelectorAll('[data-auto-terms]').forEach(el=>{ el.innerHTML=autoLinkTerms(el.textContent); });
 }
 
