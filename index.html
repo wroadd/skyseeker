@@ -77,6 +77,15 @@ button.term[aria-expanded="true"]{border-bottom-color:var(--yel);color:var(--yel
 
 
 
+
+.lang-wrap{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.lang-sel{font-family:var(--font-mono);font-size:12px;background:var(--ground);color:var(--ink);border:1px solid var(--line);border-radius:8px;padding:6px 10px;min-height:36px;cursor:pointer}
+.lang-sel:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
+.lang-offer{display:none;align-items:center;gap:8px;flex-wrap:wrap;background:rgba(61,220,200,.1);border:1px solid rgba(61,220,200,.35);border-radius:8px;padding:6px 10px;font-size:12px;color:var(--ink);max-width:min(360px,92vw)}
+.lang-offer[data-open="1"]{display:flex}
+.lang-offer .msg{flex:1 1 auto}
+.lang-offer .btn{min-height:32px;padding:4px 10px}
+
 .loc-name{appearance:none;background:transparent;border:0;padding:0;margin:0;font:inherit;color:var(--sky);font-weight:500;cursor:pointer;border-bottom:1px dotted rgba(159,224,255,.45);display:inline;line-height:inherit}
 .loc-name:hover{border-bottom-color:var(--sky);color:var(--yel)}
 .loc-name:focus-visible{outline:2px solid var(--cyan);outline-offset:2px;border-radius:2px}
@@ -131,38 +140,49 @@ footer a{color:var(--blue)}
 <header>
   <div>
     <h1>Hold<span>naptár</span></h1>
-    <div class="sub">Holdfázisok, helyi égi adatok, sarki fény és ISS — helyi idő szerint</div>
+    <div class="sub" data-i18n="brand_sub">Holdfázisok, helyi égi adatok, sarki fény és ISS — helyi idő szerint</div>
     <div class="loc" id="locline">Hely: <b>betöltés…</b></div>
   </div>
-  <div class="live" id="now">élő</div>
+  <div class="lang-wrap">
+    <label class="live" style="display:flex;align-items:center;gap:8px;text-transform:none;letter-spacing:0">
+      <span id="lang-label" style="color:var(--mute);font-size:11px">Nyelv</span>
+      <select class="lang-sel" id="lang-sel" aria-label="Language"></select>
+    </label>
+    <div class="live" id="now">élő</div>
+    <div class="lang-offer" id="lang-offer" role="status" data-open="0" hidden>
+      <span class="msg" id="lang-offer-msg"></span>
+      <button type="button" class="btn primary" id="lang-offer-yes">Igen</button>
+      <button type="button" class="btn ghost" id="lang-offer-no">Most nem</button>
+    </div>
+  </div>
 </header>
 
 <div class="grid">
-<section class="card"><div class="lbl">Következő holdtölte</div>
+<section class="card"><div class="lbl" data-i18n="lbl_next_fm">Következő holdtölte</div>
 <div class="hero"><svg id="fmsvg" width="120" height="120" viewBox="0 0 120 120"></svg><div>
 <h2 id="fmname"></h2><div class="big" id="fmdate"></div><div class="sub mono" id="fmtime"></div></div></div>
-<div class="cd"><div><b id="cdd">0</b><small>nap</small></div><div><b id="cdh">0</b><small>óra</small></div><div><b id="cdm">0</b><small>perc</small></div><div><b id="cds">0</b><small>mp</small></div></div>
+<div class="cd"><div><b id="cdd">0</b><small data-i18n="cd_day">nap</small></div><div><b id="cdh">0</b><small data-i18n="cd_hour">óra</small></div><div><b id="cdm">0</b><small data-i18n="cd_min">perc</small></div><div><b id="cds">0</b><small data-i18n="cd_sec">mp</small></div></div>
 </section>
-<section class="card"><div class="lbl">A Hold most</div><div class="phase"><svg id="nowsvg" width="110" height="110" viewBox="0 0 120 120"></svg><div>
-<h2 id="phname"></h2><div class="stat" id="illum"></div><div class="sub"><span data-auto-terms>megvilágítottság</span> · kor: <span class="mono" id="age"></span> nap</div><div class="bar"><i id="ibar"></i></div>
-<div class="sub" style="margin-top:8px">Következő újhold: <span class="mono" id="nm"></span></div></div></div></section>
+<section class="card"><div class="lbl" data-i18n="lbl_moon_now">A Hold most</div><div class="phase"><svg id="nowsvg" width="110" height="110" viewBox="0 0 120 120"></svg><div>
+<h2 id="phname"></h2><div class="stat" id="illum"></div><div class="sub"><span data-auto-terms data-i18n="illum">megvilágítottság</span> · <span data-i18n="age_prefix">kor:</span> <span class="mono" id="age"></span> <span data-i18n="age_suffix">nap</span></div><div class="bar"><i id="ibar"></i></div>
+<div class="sub" style="margin-top:8px"><span data-i18n="next_new">Következő újhold:</span> <span class="mono" id="nm"></span></div></div></div></section>
 </div>
 
 <div class="grid3">
 <section class="card" id="card-sun">
-  <div class="lbl">Nap ma <span class="src">Astronomy Engine</span></div>
+  <div class="lbl"><span data-i18n="lbl_sun">Nap ma</span> <span class="src" data-i18n="src_astronomy">Astronomy Engine</span></div>
   <div class="loading" id="sun-status">Számolás…</div>
   <div class="kv" id="sun-kv" hidden></div>
   <div class="note" id="sun-note"></div>
 </section>
 <section class="card" id="card-moonloc">
-  <div class="lbl">Hold helyben <span class="src">Astronomy Engine</span></div>
+  <div class="lbl"><span data-i18n="lbl_moon_local">Hold helyben</span> <span class="src" data-i18n="src_astronomy">Astronomy Engine</span></div>
   <div class="loading" id="moonloc-status">Számolás…</div>
   <div class="kv" id="moonloc-kv" hidden></div>
   <div class="note" id="moonloc-note"></div>
 </section>
 <section class="card" id="card-aurora">
-  <div class="lbl">Sarki fény / űridőjárás <span class="src">NOAA SWPC</span></div>
+  <div class="lbl"><span data-i18n="lbl_aurora">Sarki fény / űridőjárás</span> <span class="src" data-i18n="src_noaa">NOAA SWPC</span></div>
   <div class="loading" id="aurora-status">Adatok lekérése…</div>
   <div class="kv" id="aurora-kv" hidden></div>
   <div class="kpbar" id="kpbar" hidden></div>
@@ -172,13 +192,13 @@ footer a{color:var(--blue)}
 
 <div class="grid g2" style="margin-top:16px">
 <section class="card" id="card-planets">
-  <div class="lbl">Bolygók ma este <span class="src">Astronomy Engine</span></div>
+  <div class="lbl"><span data-i18n="lbl_planets">Bolygók ma este</span> <span class="src" data-i18n="src_astronomy">Astronomy Engine</span></div>
   <div class="loading" id="planets-status">Számolás…</div>
   <ul class="plist" id="planets-list"></ul>
   <div class="note" id="planets-note"></div>
 </section>
 <section class="card" id="card-night">
-  <div class="lbl">Éjszakai megfigyelés <span class="src">Astronomy Engine · Open-Meteo</span></div>
+  <div class="lbl"><span data-i18n="lbl_night">Éjszakai megfigyelés</span> <span class="src" data-i18n="src_astronomy_meteo">Astronomy Engine · Open-Meteo</span></div>
   <div class="loading" id="night-status">Számolás…</div>
   <div class="kv" id="night-kv" hidden></div>
   <div class="note" id="night-note"></div>
@@ -191,26 +211,26 @@ footer a{color:var(--blue)}
   <div class="loading" id="iss-status">Áthaladások számolása…</div>
   <div id="iss-table-wrap" hidden>
     <table class="iss-table"><thead><tr>
-      <th>Dátum</th><th>Kezdet</th><th>Max</th><th>Vége</th><th>Max mag.</th>
+      <th data-i18n="iss_col_date">Dátum</th><th data-i18n="iss_col_start">Kezdet</th><th data-i18n="iss_col_max">Max</th><th data-i18n="iss_col_end">Vége</th><th data-i18n="iss_col_mag">Max mag.</th>
     </tr></thead><tbody id="iss-tbody"></tbody></table>
   </div>
   <div class="note" id="iss-note"></div>
 </section>
 
 <div class="grid g2" style="margin-top:16px">
-<section class="card"><div class="lbl">Következő 12 holdtölte</div><table id="list"></table></section>
-<section class="card"><div class="lbl">Csillagászati érdekességek <span class="src">2 hónapos ablak · max. 12 hónap</span></div>
+<section class="card"><div class="lbl" data-i18n="lbl_fm12">Következő 12 holdtölte</div><table id="list"></table></section>
+<section class="card"><div class="lbl"><span data-i18n="lbl_events">Csillagászati érdekességek</span> <span class="src"><span data-i18n="ev_window_hint">2 hónapos ablak · max. 12 hónap</span></span></div>
 <div class="legend"><span class="tag" style="color:var(--blue)">meteorraj</span><span class="tag" style="color:var(--red)">fogyatkozás</span><span class="tag" style="color:var(--org)">bolygó</span><span class="tag" style="color:var(--cyan)">napforduló / napéjegyenlőség</span><span class="tag" style="color:var(--yel)">Hold</span></div>
-<div class="ev-pager" role="navigation" aria-label="Események lapozása">
-  <button type="button" id="ev-prev" aria-label="Előző időszak">‹ Előző</button>
+<div class="ev-pager" role="navigation" aria-label="Események lapozása" data-i18n-aria="ev_pager_aria">
+  <button type="button" id="ev-prev" aria-label="Előző időszak" data-i18n-aria="ev_prev_aria">‹ Előző</button>
   <div class="range" id="ev-range" aria-live="polite"></div>
-  <button type="button" id="ev-next" aria-label="Következő időszak">Következő ›</button>
+  <button type="button" id="ev-next" aria-label="Következő időszak" data-i18n-aria="ev_next_aria">Következő ›</button>
 </div>
 <div class="ev" id="ev"></div></section>
 </div>
 
 <footer>
-Holdfázisok (lista): Jean Meeus, <i>Astronomical Algorithms</i> (49. fejezet), böngészőben számolva (pontosság ~1 perc).
+<span data-i18n="footer_intro">Holdfázisok (lista): Jean Meeus, Astronomical Algorithms (49. fejezet), böngészőben számolva (pontosság ~1 perc).</span>
 Helyi Nap/Hold/bolygó: <a href="https://github.com/cosinekitty/astronomy">Astronomy Engine</a> (MIT).
 ISS: TLE a <a href="https://celestrak.org/">Celestrak</a> forrásból, pályaszámítás: <a href="https://github.com/shashwatak/satellite-js">satellite.js</a> (MIT, SGP4).
 Űridőjárás: <a href="https://www.swpc.noaa.gov/">NOAA SWPC</a>. Felhőzet: <a href="https://open-meteo.com/">Open-Meteo</a>. Térkép: <a href="https://leafletjs.com/">Leaflet</a> (BSD-2), csempék © <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>.
@@ -222,105 +242,64 @@ A pontozott, kattintható szavak magyarázatot nyitnak. Az EV eseménylistában 
 <div id="loc-modal" role="dialog" aria-modal="true" aria-labelledby="loc-modal-title" data-open="0" hidden>
   <div class="loc-panel" role="document">
     <header>
-      <h2 id="loc-modal-title">Hely kiválasztása</h2>
-      <button type="button" class="btn ghost" id="loc-close" aria-label="Bezárás">×</button>
+      <h2 id="loc-modal-title" data-i18n="loc_modal_title">Hely kiválasztása</h2>
+      <button type="button" class="btn ghost" id="loc-close" aria-label="Bezárás" data-i18n-aria="loc_close">×</button>
     </header>
     <div class="loc-body">
       <form class="loc-search" id="loc-search-form" autocomplete="off">
-        <input type="search" id="loc-q" name="q" placeholder="Település keresése…" aria-label="Település keresése" enterkeyhint="search">
-        <button type="submit" class="btn" id="loc-search-btn">Keresés</button>
+        <input type="search" id="loc-q" name="q" placeholder="Település keresése…" data-i18n-placeholder="loc_search_ph" aria-label="Település keresése" enterkeyhint="search">
+        <button type="submit" class="btn" id="loc-search-btn" data-i18n="loc_search">Keresés</button>
       </form>
-      <div id="loc-map" aria-label="Térkép a hely kiválasztásához"></div>
+      <div id="loc-map" aria-label="Térkép a hely kiválasztásához" data-i18n-aria="loc_map_aria"></div>
       <div class="loc-meta">
-        <span>Koordináták: <b id="loc-coords">—</b></span>
-        <span>Név: <b id="loc-pick-name">—</b></span>
+        <span><span data-i18n="loc_coords">Koordináták:</span> <b id="loc-coords">—</b></span>
+        <span><span data-i18n="loc_name">Név:</span> <b id="loc-pick-name">—</b></span>
       </div>
       <div class="loc-status" id="loc-status" aria-live="polite"></div>
       <div style="display:flex;flex-wrap:wrap;gap:8px">
-        <button type="button" class="btn" id="loc-geo">Saját helyem</button>
-        <button type="button" class="btn ghost" id="loc-auto">Vissza az automatikus helyhez</button>
+        <button type="button" class="btn" id="loc-geo" data-i18n="loc_geo">Saját helyem</button>
+        <button type="button" class="btn ghost" id="loc-auto" data-i18n="loc_auto">Vissza az automatikus helyhez</button>
       </div>
     </div>
     <div class="loc-actions">
-      <button type="button" class="btn" id="loc-cancel">Mégse</button>
-      <button type="button" class="btn primary" id="loc-save">Mentés</button>
+      <button type="button" class="btn" id="loc-cancel" data-i18n="loc_cancel">Mégse</button>
+      <button type="button" class="btn primary" id="loc-save" data-i18n="loc_save">Mentés</button>
     </div>
   </div>
 </div>
 
-<div id="gbub" role="dialog" aria-modal="false" aria-label="Fogalom magyarázata" hidden>
+<div id="gbub" role="dialog" aria-modal="false" aria-label="Fogalom magyarázata" data-i18n-aria="gbub_aria" hidden>
   <button type="button" class="gx" id="gbub-x" aria-label="Bezárás">×</button>
   <div class="arrow" id="gbub-arrow" aria-hidden="true"></div>
   <div class="gt" id="gbub-t"></div>
   <div id="gbub-b"></div>
   <div class="glink" id="gbub-l" hidden></div>
 </div>
+<script src="i18n.js"></script>
 <script src="vendor/astronomy.browser.min.js"></script>
 <script src="vendor/satellite.min.js"></script>
 <script>
 
 /* =============================================================================
-   GLOSSARY / EV jelölés
-   - GLOSSARY: kulcs → {title, text, aliases?}. Az aliases és a title alapján
-     automatikusan pontozott, kattintható magyarázat készül a szövegben.
-   - Az EV tömb havi rutinja változatlan maradhat; a render után auto-egyeztetés fut.
-   - Opcionális kézi jelölés bármely HTML-ben: [[kulcs|megjelenő szöveg]]
-     pl. "A [[szembenallas|szembenállás]] idején..."
-   ============================================================================= */
-const GLOSSARY = {
-  kp: { title:'Kp-index', aliases:['Kp index','Kp-index','Kp'], text:'A Föld mágneses terének globális zavartságát mérő 0–9 skála (3 órás időközönként). 0 = nyugodt, 5 = kisebb geomágneses vihar (G1), 9 = extrém. A sarki fény oválja magasabb Kp mellett dél felé tolódik.' },
-  ovation: { title:'OVATION', aliases:['OVATION'], text:'A NOAA rövid távú sarki fény valószínűségi modellje (Oval Variation, Assessment, Tracking, Intensity and Online Nowcasting). Adott földrajzi ponton százalékban becsüli az aurora előfordulását; közép-európai értékek általában alacsonyak.' },
-  geomag: { title:'Geomágneses szélesség', aliases:['geomágneses szélesség','Geomágneses szélesség'], text:'A földrajzi szélességhez hasonló, de a mágneses pólusokhoz igazított koordináta. A sarki fény határai ehhez igazodnak, nem a földrajzi szélességhez — ezért Észak-Amerikában alacsonyabb földrajzi szélességen is gyakrabban látszik aurora.' },
-  gskala: { title:'NOAA G-skála', aliases:['G-skála','NOAA G-skála','G-skala'], text:'Geomágneses viharok NOAA-besorolása G0–G5. G1 (Kp≈5) kisebb, G5 (Kp≈9) extrém vihar. Hatással lehet az áramhálózatra, műholdakra és a rádiós összeköttetésre is.' },
-  napszel: { title:'Napszél', aliases:['napszél','Napszél'], text:'A Napból kiáramló töltött részecskék (főként protonok és elektronok) folyama. Sebessége tipikusan 300–800 km/s; a Föld mágneses terével találkozva sarki fényt és geomágneses zavart okozhat.' },
-  bz: { title:'IMF Bz', aliases:['IMF Bz','Bz (GSM)','Bz'], text:'A bolygóközi mágneses mező (IMF) északi–déli komponense GSM koordinátákban. Negatív (délies) Bz esetén a napszél energiája könnyebben csatolódik a Föld mágneses teréhez, és nő a sarki fény esélye.' },
-  bt: { title:'IMF Bt', aliases:['IMF Bt','Bt'], text:'A bolygóközi mágneses mező teljes térerőssége (nT). Önmagában nem dönti el a sarki fényt, de erős mező + délies Bz kombinációja kedvező.' },
-  libracio: { title:'Libráció', aliases:['libráció','Libráció'], text:'A Hold látszólagos „billegése”, aminek köszönhetően a felületének kb. 59%-át láthatjuk idővel. Az elontúdó (kelet–nyugat) és elattúdó (észak–dél) szögeltérést fokban adjuk meg.' },
-  magnitudó: { title:'Magnitúdó', aliases:['magnitúdó','Magnitúdó','mag'], text:'Csillagászati fényességskála: minél kisebb (akár negatív) a szám, annál fényesebb az objektum. Szabad szemmel kb. 6 mag-ig láthatók a csillagok ideális, sötét égen.' },
-  azimut: { title:'Azimut', aliases:['azimut','Azimut'], text:'Vízszintes irány a horizonton: 0° = észak, 90° = kelet, 180° = dél, 270° = nyugat. Megmondja, merre nézz, ha meg akarod találni az égitestet.' },
-  magassag: { title:'Magasság (eleváció)', aliases:['magasság','Magasság','eleváció','Eleváció'], text:'Szög a horizont felett: 0° a horizont, 90° a zenit (pontosan feletted). Negatív érték azt jelenti, hogy az objektum a horizont alatt van.' },
-  polgari: { title:'Polgári szürkület', aliases:['polgári szürkület','Polgári szürkület'], text:'Amíg a Nap középpontja 0° és −6° között van a horizont alatt. Még világos az égbolt ahhoz, hogy kültéri tevékenységet lámpa nélkül végezzünk; a legfényesebb bolygók már megjelenhetnek.' },
-  tengeri: { title:'Tengerészeti szürkület', aliases:['tengerészeti szürkület','Tengerészeti szürkület','nautikai szürkület'], text:'A Nap −6° és −12° között van. A horizont még kivehető, a fényesebb csillagok már látszanak — hagyományosan a tengeri navigációhoz kötődik.' },
-  csill_szurk: { title:'Csillagászati szürkület', aliases:['csillagászati szürkület','Csill. szürkület','csill. szürkület'], text:'A Nap −12° és −18° között. Vége után (−18° alatt) kezdődik a csillagászati éjszaka: az ég gyakorlatilag teljesen sötét, ideális a halvány objektumokhoz.' },
-  aranyora: { title:'Aranyóra', aliases:['aranyóra','Aranyóra'], text:'Napnyugta (vagy napkelte) körüli periódus, amikor a Nap alacsony (kb. 6° felett a horizonton), és meleg, aranyló fényt ad — fotósok kedvence.' },
-  kekora: { title:'Kék óra', aliases:['kék óra','Kék óra'], text:'Nem sokkal napnyugta után (vagy napkelte előtt), amikor a Nap kb. −4° és −8° között van: az ég mélykék, egyenletes fényű, mesterséges fények szépen kirajzolódnak.' },
-  szuperhold: { title:'Szuperhold', aliases:['szuperhold','Szuperhold'], text:'Telihold (néha újhold), amikor a Hold közel van a földközelponthoz (perigee), ezért kissé nagyobbnak és fényesebbnek látszik. A különbség szabad szemmel szerény (~10–14%).' , wiki:{url:'https://hu.wikipedia.org/wiki/Szuperhold', lang:'hu', label:'Szuperhold — Wikipédia'} },
-  perigee: { title:'Földközelpont (perigee)', aliases:['földközelpont','perigee','Perigee'], text:'A Hold pályájának Földhöz legközelebbi pontja. Itt a Hold látszólagos átmérője a legnagyobb.' },
-  apogee: { title:'Földtávolpont (apogee)', aliases:['földtávolpont','apogee','Apogee'], text:'A Hold pályájának Földtől legtávolabbi pontja. Ilyenkor a telihold kisebbnek tűnik („mikrohold”).' },
-  napegyen: { title:'Napéjegyenlőség', aliases:['napéjegyenlőség','Napéjegyenlőség'], text:'Amikor a Nap az égbolton az égi egyenlítőt keresztezi (március és szeptember körül): a nappal és az éjszaka a Földön közel egyenlő hosszú. A csillagászati tavasz, illetve ősz kezdete.' },
-  napfordulo: { title:'Napforduló', aliases:['napforduló','Napforduló'], text:'Amikor a Nap delelési magassága szélsőértéket ér el (június: leghosszabb nappal, december: legrövidebb). A csillagászati nyár, illetve tél kezdete.' },
-  meteorraj: { title:'Meteorraj', aliases:['meteorraj','Meteorraj','hullócsillag'], text:'A Föld meteoroid-árammal találkozik (gyakran üstökös porával). A meteorek látszólag egy pontból, a radiánsból „sugároznak”. A maximum körül a legtöbb hullócsillag látható.' },
-  zhr: { title:'ZHR', aliases:['ZHR','zhr'], text:'Zenithal Hourly Rate: ideális körülmények között (radiáns a zeniten, tiszta, sötét ég) várható meteorszám óránként. A ténylegesen látható szám ennél általában kisebb.' },
-  radians: { title:'Radiáns', aliases:['radiáns','Radiáns'], text:'Az az égboltpont (csillagképben), ahonnan egy meteorraj tagjai látszólag kiindulnak. Maga a radiáns nem „lő ki” meteort — a párhuzamos pályák perspektívahatása.' },
-  szembenallas: { title:'Szembenállás', aliases:['szembenállás','Szembenállás','oppozíció','oppozicio'], text:'Amikor egy külső bolygó a Földdel ellentétes oldalon van a Naphoz képest: egész éjjel látható, delelése éjfél körül van, és általában a legfényesebb / legközelebbi időszak.' },
-  egyuttallas: { title:'Együttállás', aliases:['együttállás','Együttállás','konjunkció'], text:'Két égitest (pl. bolygó–Hold vagy két bolygó) közel jelenik meg az égen, kis szögtávolságra. Nem jelenti, hogy fizikailag közel vannak egymáshoz.' },
-  kiteres: { title:'Kitérés (elongáció)', aliases:['kitérés','Kitérés','elongáció','elongacio'], text:'A Merkúr vagy a Vénusz szögtávolsága a Naptól az égen. Legnagyobb keleti/nyugati kitéréskor ezek a bolygók a legkönnyebben megfigyelhetők este, illetve hajnalban.' },
-  felarnyek: { title:'Félárnyékos holdfogyatkozás', aliases:['félárnyékos holdfogyatkozás','Félárnyékos holdfogyatkozás','félárnyékos'], text:'A Hold csak a Föld félárnyékán (penumbra) halad át. Az elhalványulás gyakran szabad szemmel alig észrevehető, ellentétben a részleges vagy teljes holdfogyatkozással.' },
-  reszleges: { title:'Részleges fogyatkozás', aliases:['részleges fogyatkozás','részleges'], text:'Az égitest korongjának csak egy része kerül árnyékba (Hold), illetve a Hold csak részben takarja a Napot. Napfogyatkozásnál mindig napszűrő kell!' },
-  megvilagitottsag: { title:'Megvilágítottság', aliases:['megvilágítottság','Megvilágítottság'], text:'A Hold (vagy bolygó) felénk néző oldalának napfényes hányada százalékban. Újhold ≈ 0%, telihold ≈ 100%. Nem azonos a fázis nevével pontosan a negyedeknél sem.' },
-  novekvo: { title:'Növekvő / fogyó fázis', aliases:['növekvő sarló','fogyó sarló','növekvő hold','fogyó hold','első negyed','utolsó negyed','telihold','újhold'], text:'Újhold után a Hold „növekszik” (sarló → első negyed → domború → telihold), majd „fogy” (domború → utolsó negyed → sarló). Az északi féltekén a növekvő Hold jobb oldala világos.' },
-  holdkor: { title:'Hold kora', aliases:['Hold kora','hold kora','kor'], text:'Az eltelt napok száma az utolsó újhold óta. Egy szinomikus hónap kb. 29,5 nap; 0 nap ≈ újhold, ~14,8 nap ≈ telihold.' },
-  iss: { title:'ISS', aliases:['ISS','Nemzetközi Űrállomás','űrállomás'], text:'A Nemzetközi Űrállomás (International Space Station) kb. 400 km magasan kering, ~90 percenként kerüli meg a Földet. Tiszta égen mozgó, fényes pontként látszik — nem villog, mint a csillagok.' },
-  tle: { title:'TLE', aliases:['TLE'], text:'Two-Line Element: két soros pályaelem-készlet, amellyel a műhold közelítő helyzete számolható (SGP4 modell). A Celestrak és más katalógusok rendszeresen frissítik.' },
-  athaladas: { title:'Áthaladás (pass)', aliases:['áthaladás','Áthaladás','pass'], text:'Az az időszak, amíg egy műhold a megfigyelő horizontja felett van. A „látható” ISS-áthaladáshoz sötét ég, megvilágított űrállomás és megfelelő max. magasság kell.' },
+   GLOSSARY / EV — i18n
+   - Szövegek: i18n.js → GLOSSARY_I18N / EV_I18N / UI / MOON_I18N
+   - GLOSSARY futásidőben buildGlossary()-ból (aktuális LANG szerint).
+   - Kézi jelölés HTML-ben: [[kulcs|megjelenő szöveg]]
 
-  /* ---- Hagyományos teliholdnevek (főként észak-amerikai / Old Farmer’s Almanac hagyomány) ---- */
-  farkashold: { title:'Farkashold', aliases:['Farkashold','farkashold'], text:'Januári telihold. Az elnevezés észak-amerikai folklórból / az Old Farmer’s Almanac hagyományából származik: a farkasok hangos januári üvöltéséhez kötötték. Nem magyar néphagyomány.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  hohold: { title:'Hóhold', aliases:['Hóhold','hóhold'], text:'Februári telihold. Az erős havazásról kapta a nevét az észak-amerikai hagyományban (Snow Moon, Old Farmer’s Almanac).', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  fereghold: { title:'Féreghold', aliases:['Féreghold','féreghold'], text:'Márciusi telihold (Worm Moon). A talajolvadáskor megjelenő földigiliszta-aktivitáshoz kötötték; észak-amerikai / Farmer’s Almanac hagyomány.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  rozsaszin: { title:'Rózsaszín Hold', aliases:['Rózsaszín Hold','rózsaszín hold','Rózsaszín hold'], text:'Áprilisi telihold (Pink Moon). Nem a Hold színe: a korai vad flox (pink moss phlox) virágzásáról nevezték el az észak-amerikai hagyományban.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  viraghold: { title:'Virághold', aliases:['Virághold','virághold'], text:'Májusi telihold (Flower Moon): a tavaszi virágözönről az észak-amerikai holdnév-hagyomány szerint.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  eperhold: { title:'Eperhold', aliases:['Eperhold','eperhold'], text:'Júniusi telihold (Strawberry Moon): az erdei szamóca érésének idejéhez kötött észak-amerikai elnevezés.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  bakhold: { title:'Bakhold', aliases:['Bakhold','bakhold'], text:'Júliusi telihold (Buck Moon): a hím szarvasok új agancsnövekedéséhez kapcsolt észak-amerikai név.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  tokhalhold: { title:'Tokhalhold', aliases:['Tokhalhold','tokhalhold','Tokhal hold'], text:'Augusztusi telihold (Sturgeon Moon): a Nagy-tavak környékén ilyenkor könnyebben fogható tokhalról; Farmer’s Almanac / észak-amerikai hagyomány.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  kukoricahold: { title:'Kukoricahold', aliases:['Kukoricahold','kukoricahold'], text:'Szeptemberi telihold, ha nem esik az őszi napéjegyenlőség közelébe (akkor Aratáshold). A kukoricaaratáshoz kötött észak-amerikai név (Corn Moon).', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  aratashold: { title:'Aratáshold', aliases:['Aratáshold','aratáshold','Aratás holdja'], text:'Az őszi napéjegyenlőséghez legközelebbi telihold (Harvest Moon). Híres arról, hogy napnyugta után hamar felkel, így hosszabb esti fényt ad az aratáshoz — európai és észak-amerikai hagyomány is ismeri.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Harvest_moon', lang:'en', label:'Harvest moon'} },
-  vadaszhold: { title:'Vadászhold', aliases:['Vadászhold','vadászhold'], text:'Az Aratáshold utáni telihold (Hunter’s Moon), tipikusan októberben. A vadászati szezonhoz kötött elnevezés; észak-amerikai / európai folklór.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Harvest_and_hunter%27s_moons', lang:'en', label:'Hunter’s moon'} },
-  hodhold: { title:'Hódhold', aliases:['Hódhold','hódhold'], text:'Novemberi telihold (Beaver Moon): a hódok téli gátépítésének / a hódszőrme-vadászat idejének észak-amerikai emlékneve.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  hideghold: { title:'Hideghold', aliases:['Hideghold','hideghold','Hideg hold'], text:'Decemberi telihold (Cold Moon): a hosszú, hideg téli éjszakákról az észak-amerikai holdnév-hagyományban.', wiki:{url:'https://en.wikipedia.org/wiki/Full_moon#Full_moon_names', lang:'en', label:'Full moon names'} },
-  kekhold: { title:'Kékhold', aliases:['Kékhold','kékhold','Kék hold'], text:'Két gyakori jelentés: (1) modern naptári: a második telihold ugyanabban a naptári hónapban; (2) szezonális (Farmer’s Almanac): a négy teliholdas évszak harmadik teliholdja. Sem a Hold, sem az ég nem kék tőle.', wiki:{url:'https://en.wikipedia.org/wiki/Blue_moon', lang:'en', label:'Blue moon'} },
-  sgp4: { title:'SGP4', aliases:['SGP4'], text:'Standard pályaterjesztő algoritmus alacsony Föld körüli műholdakhoz. A TLE-ből percek–napok távlatában jó közelítéssel megadja a műhold helyzetét.' }
-};
+   HAVI RUTIN — új esemény hozzáadása (fordításokkal)
+   --------------------------------------------------
+   1) Nyisd meg az i18n.js fájlt, keresd: const EV_I18N = [
+   2) Adj hozzá egy sort a tömbhöz (UTC dátum, kategória, cím, leírás):
+        ["YYYY-MM-DDTHH:MMZ", "<cat>",
+         {hu:"…", en:"…", de:"…"},
+         {hu:"…", en:"…", de:"…"}],
+      ahol <cat> = m meteorraj | e fogyatkozás | p bolygó | s évszak | l Hold
+   3) Hiányzó fordítás: a megjelenítő először az aktuális nyelvet, majd en-t,
+      majd hu-t használja (tt() / evStr). Angol cím+leírás legyen mindig meg.
+   4) Fogalom: GLOSSARY_I18N + GLOSSARY_ALIASES; UI: UI.<lang>; holdnevek: MOON_I18N.
+   5) Mentés után ellenőrizd helyben (npx serve) és a Playwright teszttel.
+   ============================================================================= */
+let GLOSSARY = typeof buildGlossary==='function' ? buildGlossary() : {};
 
 const TZ='Europe/Budapest',R=Math.PI/180;
 const DEFAULT_LAT=47.4979, DEFAULT_LON=19.0402, DEFAULT_NAME='Budapest';
@@ -340,38 +319,34 @@ let add=0;A.forEach(a=>add+=a[3]*1e-6*s((a[0]+a[1]*k+a[2]*T2)*R));
 return jde+c+add}
 const jdToDate=jde=>{const y=2000+(jde-2451545)/365.25,dT=62.92+0.32217*(y-2000)+0.005589*(y-2000)**2;
 return new Date((jde-2440587.5)*864e5-Math.min(dT,75)*1000)};
-const fmtD=d=>d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'long',day:'numeric',weekday:'long'});
-const fmtT=d=>d.toLocaleTimeString('hu-HU',{timeZone:TZ,hour:'2-digit',minute:'2-digit'});
-const fmtTs=d=>d.toLocaleTimeString('hu-HU',{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});
+const fmtD=d=>d.toLocaleDateString(localeTag(),{timeZone:TZ,year:'numeric',month:'long',day:'numeric',weekday:'long'});
+const fmtT=d=>d.toLocaleTimeString(localeTag(),{timeZone:TZ,hour:'2-digit',minute:'2-digit'});
+const fmtTs=d=>d.toLocaleTimeString(localeTag(),{timeZone:TZ,hour:'2-digit',minute:'2-digit',second:'2-digit'});
 const monthBP=d=>+d.toLocaleString('en-US',{timeZone:TZ,month:'numeric'})-1;
-const NAMES=['Farkashold','Hóhold','Féreghold','Rózsaszín Hold','Virághold','Eperhold','Bakhold','Tokhalhold','Kukoricahold','Vadászhold','Hódhold','Hideghold'];
+const MOON_KEYS=['farkashold','hohold','fereghold','rozsaszin','viraghold','eperhold','bakhold','tokhalhold','kukoricahold','vadaszhold','hodhold','hideghold'];
 function fullMoonsFrom(now,n){let k=Math.floor((now/864e5+2440587.5-2451550.09766)/29.530588861)-1+0.5,out=[];
 while(out.length<n){const d=jdToDate(phaseJDE(k));if(d>now)out.push(d);k++}return out}
 function nextNew(now){let k=Math.floor((now/864e5+2440587.5-2451550.09766)/29.530588861)-1;for(;;k++){const d=jdToDate(phaseJDE(k));if(d>now)return d}}
-const MOON_TERM={
-  'Farkashold':'farkashold','Hóhold':'hohold','Féreghold':'fereghold','Rózsaszín Hold':'rozsaszin',
-  'Virághold':'viraghold','Eperhold':'eperhold','Bakhold':'bakhold','Tokhalhold':'tokhalhold',
-  'Kukoricahold':'kukoricahold','Vadászhold':'vadaszhold','Hódhold':'hodhold','Hideghold':'hideghold',
-  'Aratáshold':'aratashold','Kékhold':'kekhold'
-};
-function moonName(d, prev){
+function moonKey(d, prev){
   if(prev){
     const a=d.toLocaleDateString('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit'});
     const b=prev.toLocaleDateString('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit'});
-    if(a===b) return 'Kékhold';
+    if(a===b) return 'kekhold';
   }
   const y=d.getUTCFullYear(),m=monthBP(d);
-  const eq=Date.UTC(y,8,23);if(Math.abs(d-eq)<14.8*864e5)return 'Aratáshold';
-  return NAMES[m];
+  const eq=Date.UTC(y,8,23);if(Math.abs(d-eq)<14.8*864e5)return 'aratashold';
+  return MOON_KEYS[m];
 }
 function moonNameMarkup(d, prev){
-  const name=moonName(d, prev);
-  const key=MOON_TERM[name];
+  const key=moonKey(d, prev);
+  const name=moonNameLocal(key);
   const isSuper=superm(d)<360000;
-  let html=key
-    ? `<button type="button" class="term" data-term="${key}" aria-expanded="false">${name}</button>`
-    : autoLinkTerms(name);
-  if(isSuper) html+=` · <button type="button" class="term" data-term="szuperhold" aria-expanded="false">szuperhold</button>`;
+  let html=`<button type="button" class="term" data-term="${key}" aria-expanded="false">${name}</button>`;
+  if(isSuper){
+    const sn = (GLOSSARY.szuperhold && GLOSSARY.szuperhold.title) || t('title') && 'supermoon';
+    const superLabel = (GLOSSARY.szuperhold && GLOSSARY.szuperhold.title) || 'Szuperhold';
+    html+=` · <button type="button" class="term" data-term="szuperhold" aria-expanded="false">${superLabel.toLowerCase()}</button>`;
+  }
   return html;
 }
 function superm(d){
@@ -384,36 +359,20 @@ el.innerHTML=`<defs><radialGradient id="g${el.id}" cx="40%" cy="35%"><stop offse
 <circle cx="60" cy="60" r="54" fill="#FFD24A" opacity="${.12*ill+.03}" filter="url(#b${el.id})"/><circle cx="60" cy="60" r="50" fill="#16222D" stroke="#22333F"/><path d="${p}" fill="url(#g${el.id})"/>
 <g fill="#000" opacity=".08"><circle cx="45" cy="45" r="8"/><circle cx="72" cy="70" r="11"/><circle cx="70" cy="38" r="5"/><circle cx="48" cy="78" r="6"/></g>`;return ill}
 
-const EV=[ // dátumok UTC; források: timeanddate, WhatTheStar, Cosmic Meridian, CycleCalcs, AstroTools
-['2026-11-17T22:00Z','m','Leonidák meteorraj maximuma','Nov. 17/18 éjjel, óránként kb. 15 meteor. A radiáns (Oroszlán) éjfél után emelkedik magasra.'],
-['2026-11-20T12:00Z','p','Merkúr legnagyobb nyugati kitérése','Hajnalban, napkelte előtt alacsonyan keleten kereshető — az év utolsó jó Merkúr-láthatósága.'],
-['2026-12-14T20:00Z','m','Geminidák meteorraj maximuma','Dec. 14/15 éjjel — az év egyik leglátványosabb hullócsillag-raja, akár 100+ meteor/óra ideális égen.'],
-['2026-12-21T20:50Z','s','Téli napforduló','21:50-kor (budapesti idő) — az év legrövidebb nappala, a csillagászati tél kezdete.'],
-['2026-12-22T12:00Z','m','Ursidák meteorraj','Dec. 22/23 körüli gyenge, északi raj (Kis Medve), óránként 5–10 meteor.'],
-['2026-12-24T01:00Z','l','Szuperhold — Hideghold','Az év egyetlen „szuper” teliholdja: a Hold közel van földközelpontjához, kissé nagyobbnak és fényesebbnek látszik.'],
-['2027-01-03T12:00Z','p','Vénusz legnagyobb nyugati kitérése','A Hajnalcsillag 47°-ra a Naptól, hajnalban ragyog keleten.'],
-['2027-01-03T22:00Z','m','Quadrantidák meteorraj','Jan. 3/4 éjjel, rövid, de erős csúcs (akár 120/óra), szinte holdfénymentes égen.'],
-['2027-01-22T12:00Z','l','Az év legnagyobb szuperholdja','A 2027-es év legközelebbi teliholdja.'],
-['2027-02-06T15:59Z','e','Gyűrűs napfogyatkozás','Dél-Amerikából és Nyugat-Afrikából látható — Magyarországról NEM látszik.'],
-['2027-02-11T00:24Z','p','Jupiter szembenállásban','Az Oroszlánban, −2,6 magnitúdóval egész éjjel látható — legjobb időszak távcsöves megfigyelésre.'],
-['2027-02-19T15:46Z','p','Mars szembenállásban','Az Oroszlánban, −1,2 magnitúdó, egész éjjel látható; a Jupiter közelében. A legjobb Mars-láthatóság 2029-ig.'],
-['2027-02-20T23:12Z','e','Félárnyékos holdfogyatkozás','Feb. 21. 00:12 (budapesti idő) körül; Magyarországról is látható, de az elhalványulás szabad szemmel alig észrevehető.'],
-['2027-02-22T18:00Z','p','Bolygóparádé','Mars, Jupiter, Szaturnusz, Uránusz és Neptunusz egyszerre az esti égen (ebből három szabad szemmel).'],
-['2027-03-20T12:00Z','s','Tavaszi napéjegyenlőség','Március 20. — a csillagászati tavasz kezdete, a nappal és az éjszaka közel egyenlő hosszú.'],
-['2027-04-22T12:00Z','m','Lyridák meteorraj','Ápr. 22/23 körül, óránként 10–20 meteor, a Lant csillagkép irányából.'],
-['2027-05-06T02:00Z','m','Éta Aquaridák meteorraj','Május 5/6 hajnalán; a Halley-üstökös porából. Hazánkból hajnalban, alacsonyan látható.'],
-['2027-05-07T18:44Z','p','Vénusz–Szaturnusz együttállás','Hajnalban, 36′ távolságra egymástól a keleti égen.'],
-['2027-06-21T12:00Z','s','Nyári napforduló','Június 21. — az év leghosszabb nappala, a csillagászati nyár kezdete.'],
-['2027-07-18T16:02Z','e','Félárnyékos holdfogyatkozás','Magyarországról gyakorlatilag nem figyelhető meg (a Hold a fogyatkozás idején még a horizont alatt van).'],
-['2027-08-02T10:06Z','e','Teljes napfogyatkozás (hazánkból részleges)','A teljesség sávja Spanyolországon, Észak-Afrikán és Egyiptomon át húzódik; Magyarországról délelőtt részleges fogyatkozás látszik. Csak napszűrővel nézd!'],
-['2027-08-12T20:00Z','m','Perseidák meteorraj','Aug. 12/13 éjjel — a nyár legnépszerűbb hullócsillag-raja, akár 60–100 meteor/óra.'],
-['2027-08-17T07:13Z','e','Félárnyékos holdfogyatkozás','Magyarországról nem látható (a Hold ekkor már lenyugodott).'],
-['2027-09-23T12:00Z','s','Őszi napéjegyenlőség','Szeptember 23. — a csillagászati ősz kezdete.'],
-['2027-10-08T18:00Z','m','Draconidák meteorraj','Okt. 8/9 este, a Sárkány csillagképből; általában gyenge, néha meglepetésszerű kitöréssel.'],
-['2027-10-18T00:27Z','p','Szaturnusz szembenállásban','Egész éjjel látható, a gyűrűk távcsővel szépen megfigyelhetők.'],
-['2027-10-21T22:00Z','m','Orionidák meteorraj','Okt. 21/22 körül, a Halley-üstökös másik meteorraja, óránként kb. 20 meteor.'],
-];
-const COL={m:'var(--blue)',e:'var(--red)',p:'var(--org)',s:'var(--cyan)',l:'var(--yel)'},TYP={m:'meteorraj',e:'fogyatkozás',p:'bolygó',s:'évszak',l:'Hold'};
+/* EV megjelenítés: forrás EV_I18N (i18n.js). Lásd a fenti HAVI RUTIN kommentet. */
+function evStr(obj){
+  if(obj==null) return '';
+  if(typeof obj==='string') return obj;
+  return obj[LANG] || obj.en || obj.hu || Object.values(obj)[0] || '';
+}
+function getEV(){
+  const src = (typeof EV_I18N!=='undefined' && EV_I18N) ? EV_I18N : [];
+  return src.map(e=>[e[0], e[1], evStr(e[2]), evStr(e[3])]);
+}
+let EV = getEV();
+const COL={m:'var(--blue)',e:'var(--red)',p:'var(--org)',s:'var(--cyan)',l:'var(--yel)'};
+function eventTypes(){return {m:t('ev_cat_m'),e:t('ev_cat_e'),p:t('ev_cat_p'),s:t('ev_cat_s'),l:t('ev_cat_l')};}
+let TYP=eventTypes();
 let FM=[];
 
 /* ---- Glossary UI ---- */
@@ -439,8 +398,11 @@ function openTerm(btn){
   gbubT.textContent=g.title;
   gbubB.textContent=g.text;
   if(g.wiki && g.wiki.url){
-    const langMark=g.wiki.lang==='en'?' <span class="lang">(angol)</span>':'';
-    const label=g.wiki.label||'Wikipédia';
+    const mark = (g.wiki.lang && g.wiki.lang!==LANG)
+      ? (g.wiki.lang==='en' ? t('wiki_en_mark') : ('('+g.wiki.lang+')'))
+      : '';
+    const langMark = mark ? ' <span class="lang">'+mark+'</span>' : '';
+    const label=g.wiki.label||'Wikipedia';
     gbubL.innerHTML=`<a href="${g.wiki.url}" target="_blank" rel="noopener noreferrer">${label}</a>${langMark}`;
     gbubL.hidden=false;
   } else {
@@ -555,9 +517,9 @@ function cell(k,v,cls,termKey){
   return `<div><div class="k">${label}</div><div class="v${cls?' '+cls:''}">${v}</div></div>`;
 }
 
-const HU_MONTHS=['január','február','március','április','május','június','július','augusztus','szeptember','október','november','december'];
 let evOffset=0;
 const EV_MAX_OFFSET=10; // 2-hó ablak; utolsó offset: +10/+11 ≈ 12 hó előre
+function monthNames(){ return tList('months'); }
 
 function ymOf(date){
   const parts=new Intl.DateTimeFormat('en-CA',{timeZone:TZ,year:'numeric',month:'2-digit'}).formatToParts(date);
@@ -568,10 +530,11 @@ function addMonthsYM(ym,n){
   return {y:Math.floor(idx/12), m:(idx%12)+1};
 }
 function formatEvRange(startYM){
+  const M=monthNames();
   const endYM=addMonthsYM(startYM,1);
   if(startYM.y===endYM.y)
-    return `${startYM.y}. ${HU_MONTHS[startYM.m-1]} – ${HU_MONTHS[endYM.m-1]}`;
-  return `${startYM.y}. ${HU_MONTHS[startYM.m-1]} – ${endYM.y}. ${HU_MONTHS[endYM.m-1]}`;
+    return `${startYM.y}. ${M[startYM.m-1]} – ${M[endYM.m-1]}`;
+  return `${startYM.y}. ${M[startYM.m-1]} – ${endYM.y}. ${M[endYM.m-1]}`;
 }
 function eventInWindow(evDate, startYM){
   const ym=ymOf(evDate);
@@ -598,7 +561,7 @@ function renderEvents(){
   const html=items.map(e=>{
     const d=new Date(e[0]);
     const showT=e[1]=='e'||e[0].endsWith(':50Z')||/:2\dZ|:0[2-9]Z|:12Z|:13Z|:44Z|:46Z/.test(e[0]);
-    return `<div class="e" style="--c:${COL[e[1]]}"><div class="d">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'long',day:'numeric'})}${showT?' · '+fmtT(d):''} · ${TYP[e[1]]}</div><h3>${autoLinkTerms(e[2])}</h3><p>${autoLinkTerms(e[3])}</p></div>`;
+    return `<div class="e" style="--c:${COL[e[1]]}"><div class="d">${d.toLocaleDateString(localeTag(),{timeZone:TZ,year:'numeric',month:'long',day:'numeric'})}${showT?' · '+fmtT(d):''} · ${TYP[e[1]]}</div><h3>${autoLinkTerms(e[2])}</h3><p>${autoLinkTerms(e[3])}</p></div>`;
   }).join('');
   document.getElementById('ev').innerHTML=html||'<p class="ev-empty">Nincs esemény ebben az időszakban</p>';
 }
@@ -608,21 +571,21 @@ document.getElementById('ev-next').addEventListener('click',()=>{ if(evOffset<EV
 function renderMoonCards(){const now=new Date();
 FM=fullMoonsFrom(now,12);const f=FM[0];
 document.getElementById('fmname').innerHTML=moonNameMarkup(f, null);
-document.getElementById('fmdate').textContent=f.toLocaleDateString('hu-HU',{timeZone:TZ,month:'long',day:'numeric'});
-document.getElementById('fmtime').textContent=fmtD(f)+', '+fmtT(f)+' (budapesti idő)';
+document.getElementById('fmdate').textContent=f.toLocaleDateString(localeTag(),{timeZone:TZ,month:'long',day:'numeric'});
+document.getElementById('fmtime').textContent=fmtD(f)+', '+fmtT(f)+' '+t('budapest_tz_note');
 moonSVG(document.getElementById('fmsvg'),14.77);
-document.getElementById('list').innerHTML=FM.map((d,i)=>`<tr><td>${moonNameMarkup(d, i?FM[i-1]:null)}</td><td class="mono">${d.toLocaleDateString('hu-HU',{timeZone:TZ,year:'numeric',month:'short',day:'numeric'})} ${fmtT(d)}</td></tr>`).join('');
+document.getElementById('list').innerHTML=FM.map((d,i)=>`<tr><td>${moonNameMarkup(d, i?FM[i-1]:null)}</td><td class="mono">${d.toLocaleDateString(localeTag(),{timeZone:TZ,year:'numeric',month:'short',day:'numeric'})} ${fmtT(d)}</td></tr>`).join('');
 const nn=nextNew(now),prevNew=jdToDate(phaseJDE(Math.round((nn/864e5+2440587.5-2451550.09766)/29.530588861)-1)),age=(now-prevNew)/864e5;
 const ill=moonSVG(document.getElementById('nowsvg'),age);
-const fr=age/29.530588861,names=['Újhold','Növekvő sarló','Első negyed','Növekvő hold','Telihold','Fogyó hold','Utolsó negyed','Fogyó sarló'];
+const fr=age/29.530588861,names=[t('phase_new'),t('phase_wax_cres'),t('phase_first'),t('phase_wax_gib'),t('phase_full'),t('phase_wan_gib'),t('phase_last'),t('phase_wan_cres')];
 document.getElementById('phname').innerHTML=autoLinkTerms(names[Math.floor(fr*8+0.5)%8]);
 document.getElementById('illum').textContent=(ill*100).toFixed(1)+' %';document.getElementById('ibar').style.width=(ill*100)+'%';
-document.getElementById('age').textContent=age.toFixed(1);document.getElementById('nm').textContent=nn.toLocaleDateString('hu-HU',{timeZone:TZ,month:'long',day:'numeric'})+' '+fmtT(nn);
+document.getElementById('age').textContent=age.toFixed(1);document.getElementById('nm').textContent=nn.toLocaleDateString(localeTag(),{timeZone:TZ,month:'long',day:'numeric'})+' '+fmtT(nn);
 renderEvents();
 }
 function tick(){const now=new Date();if(!FM.length||now>FM[0])renderMoonCards();let s=Math.max(0,(FM[0]-now)/1000|0);
 cdd.textContent=s/86400|0;cdh.textContent=String((s%86400)/3600|0).padStart(2,'0');cdm.textContent=String((s%3600)/60|0).padStart(2,'0');cds.textContent=String(s%60).padStart(2,'0');
-document.getElementById('now').textContent=now.toLocaleString('hu-HU',{timeZone:TZ,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'})}
+document.getElementById('now').textContent=now.toLocaleString(localeTag(),{timeZone:TZ,month:'short',day:'numeric',hour:'2-digit',minute:'2-digit',second:'2-digit'});}
 
 const PIN_SVG=`<span class="pin" aria-hidden="true"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5A2.5 2.5 0 1 1 12 6a2.5 2.5 0 0 1 0 5.5z"/></svg></span>`;
 
@@ -637,14 +600,14 @@ function displayPlaceName(loc){
 function updateLocLine(){
   const coords=formatCoords(LOC.lat, LOC.lon);
   let note='';
-  if(LOC.source==='saved') note='mentett hely (térkép)';
-  else if(LOC.source==='geo') note='böngésző geolokációja';
-  else if(LOC.source==='denied') note='helymeghatározás megtagadva — Budapest alapértelmezés';
-  else if(LOC.source==='error') note='helymeghatározás sikertelen — Budapest alapértelmezés';
-  else note='Budapest alapértelmezés';
+  if(LOC.source==='saved') note=t('loc_note_saved');
+  else if(LOC.source==='geo') note=t('loc_note_geo');
+  else if(LOC.source==='denied') note=t('loc_note_denied');
+  else if(LOC.source==='error') note=t('loc_note_error');
+  else note=t('loc_note_default');
   const name=displayPlaceName(LOC);
   document.getElementById('locline').innerHTML=
-    `Hely: <button type="button" class="loc-name" id="loc-edit" aria-haspopup="dialog" aria-controls="loc-modal" aria-label="Hely módosítása térképen">${PIN_SVG}${name}</button>`+
+    t('loc_prefix')+' <button type="button" class="loc-name" id="loc-edit" aria-haspopup="dialog" aria-controls="loc-modal" aria-label="'+t('loc_edit_aria')+'">'+PIN_SVG+name+'</button>'+
     ` · <span class="mono">${coords}</span><br><span style="opacity:.85">${note}</span>`;
   const btn=document.getElementById('loc-edit');
   if(btn) btn.addEventListener('click', openLocPicker);
@@ -658,7 +621,9 @@ function searchRS(body, obs, direction, startDate, limitDays){
   try{return Astronomy.SearchRiseSet(body, obs, direction, startDate, limitDays)}catch(e){return null}
 }
 function compass(az){
-  const dirs=['É','ÉK','K','DK','D','DNY','NY','ÉNY'];
+  const dirs = LANG==='de' ? ['N','NO','O','SO','S','SW','W','NW']
+             : LANG==='en' ? ['N','NE','E','SE','S','SW','W','NW']
+             : ['É','ÉK','K','DK','D','DNY','NY','ÉNY'];
   return dirs[Math.round(((az%360)+360)%360/45)%8];
 }
 function geomagneticLatitude(lat, lon){
@@ -677,7 +642,7 @@ function kpNeededForAurora(gLat){
 function renderLocalSky(){
   if(typeof Astronomy==='undefined'){
     ['sun','moonloc','planets','night'].forEach(id=>{
-      document.getElementById(id+'-status').innerHTML='<span class="err">Az Astronomy Engine nem töltődött be.</span>';
+      document.getElementById(id+'-status').innerHTML='<span class="err">'+t('err_astro_missing')+'</span>';
     });
     return;
   }
@@ -699,23 +664,23 @@ function renderLocalSky(){
     let dayLen='—';
     if(sunrise&&sunset){
       const sec=(sunset.date-sunrise.date)/1000;
-      dayLen=`${Math.floor(sec/3600)} óra ${String(Math.floor((sec%3600)/60)).padStart(2,'0')} perc`;
+      dayLen=tf('fmt_hm',{h:Math.floor(sec/3600),m:String(Math.floor((sec%3600)/60)).padStart(2,'0')});
     }
     document.getElementById('sun-status').hidden=true;
     const sk=document.getElementById('sun-kv'); sk.hidden=false;
     sk.innerHTML=
-      cell('Napkelte', sunrise?fmtT(sunrise.date):'—', 'em')+
-      cell('Napnyugta', sunset?fmtT(sunset.date):'—', 'em')+
-      cell('Nappalhossz', dayLen, 'cyan')+
-      cell('Polgári szürkület', (civilDawn&&civilDusk)?(fmtT(civilDawn.date)+' / '+fmtT(civilDusk.date)):'—', '', 'polgari')+
-      cell('Csill. szürkület vége', astroDusk?fmtT(astroDusk.date):'—', '', 'csill_szurk')+
-      cell('Aranyóra (este)', (goldStart&&sunset)?(fmtT(goldStart.date)+'–'+fmtT(sunset.date)):'—', '', 'aranyora');
+      cell(t('sun_rise'), sunrise?fmtT(sunrise.date):'—', 'em')+
+      cell(t('sun_set'), sunset?fmtT(sunset.date):'—', 'em')+
+      cell(t('day_len'), dayLen, 'cyan')+
+      cell(t('civil_tw'), (civilDawn&&civilDusk)?(fmtT(civilDawn.date)+' / '+fmtT(civilDusk.date)):'—', '', 'polgari')+
+      cell(t('astro_tw_end'), astroDusk?fmtT(astroDusk.date):'—', '', 'csill_szurk')+
+      cell(t('golden'), (goldStart&&sunset)?(fmtT(goldStart.date)+'–'+fmtT(sunset.date)):'—', '', 'aranyora');
     document.getElementById('sun-note').innerHTML=autoLinkTerms(
       (blueStart&&blueEnd?`Kék óra este: ${fmtT(blueStart.date)}–${fmtT(blueEnd.date)}. `:'')+
       'Számolás a megadott földrajzi helyre, helyi (Budapest-zóna) megjelenítéssel.');
     window.__sky={sunrise,sunset,civilDusk,astroDusk,astroDawn,startGuess,y,m,d};
   }catch(e){
-    document.getElementById('sun-status').innerHTML='<span class="err">Napadatok számolása sikertelen.</span>';
+    document.getElementById('sun-status').innerHTML='<span class="err">'+t('err_sun')+'</span>';
     console.error(e);
   }
 
@@ -739,23 +704,23 @@ function renderLocalSky(){
     const mk=document.getElementById('moonloc-kv'); mk.hidden=false;
     const above=hor.altitude>0;
     mk.innerHTML=
-      cell('Holdkelte', moonrise?fmtT(moonrise.date):'—')+
-      cell('Holdnyugta', moonset?fmtT(moonset.date):'—')+
-      cell('Magasság', hor.altitude.toFixed(1)+'°'+(above?'':' (horizont alatt)'), above?'cyan':'', 'magassag')+
-      cell('Azimut', hor.azimuth.toFixed(0)+'° '+compass(hor.azimuth), '', 'azimut')+
-      cell('Távolság', Math.round(distKm).toLocaleString('hu-HU')+' km')+
-      cell('Megvilágítottság', (ill.phase_fraction*100).toFixed(1)+' %', 'em', 'megvilagitottsag')+
-      cell('Libráció', libTxt, '', 'libracio')+
-      cell('Fényesség', ill.mag.toFixed(1)+' mag', '', 'magnitudó');
-    document.getElementById('moonloc-note').textContent='A holdkelte/-nyugta a korong felső peremének horizontérintése (töréssel).';
+      cell(t('moon_rise'), moonrise?fmtT(moonrise.date):'—')+
+      cell(t('moon_set'), moonset?fmtT(moonset.date):'—')+
+      cell(t('altitude'), hor.altitude.toFixed(1)+'°'+(above?'':' '+t('below_paren')), above?'cyan':'', 'magassag')+
+      cell(t('azimuth'), hor.azimuth.toFixed(0)+'° '+compass(hor.azimuth), '', 'azimut')+
+      cell(t('distance'), Math.round(distKm).toLocaleString(localeTag())+' km')+
+      cell(t('illumination'), (ill.phase_fraction*100).toFixed(1)+' %', 'em', 'megvilagitottsag')+
+      cell(t('libration'), libTxt, '', 'libracio')+
+      cell(t('brightness'), ill.mag.toFixed(1)+' mag', '', 'magnitudó');
+    document.getElementById('moonloc-note').textContent=t('moon_rise_note');
     window.__sky=Object.assign(window.__sky||{},{moonrise,moonset,moonIll:ill.phase_fraction});
   }catch(e){
-    document.getElementById('moonloc-status').innerHTML='<span class="err">Holdadatok számolása sikertelen.</span>';
+    document.getElementById('moonloc-status').innerHTML='<span class="err">'+t('err_moon')+'</span>';
     console.error(e);
   }
 
   try{
-    const bodies=[['Merkúr',Astronomy.Body.Mercury],['Vénusz',Astronomy.Body.Venus],['Mars',Astronomy.Body.Mars],['Jupiter',Astronomy.Body.Jupiter],['Szaturnusz',Astronomy.Body.Saturn]];
+    const bodies=[[t('planet_mercury'),Astronomy.Body.Mercury],[t('planet_venus'),Astronomy.Body.Venus],[t('planet_mars'),Astronomy.Body.Mars],[t('planet_jupiter'),Astronomy.Body.Jupiter],[t('planet_saturn'),Astronomy.Body.Saturn]];
     const dusk=window.__sky&&window.__sky.civilDusk?window.__sky.civilDusk.date:now;
     const checkAt=new Date(+dusk+30*60e3);
     const rows=[];
@@ -771,14 +736,14 @@ function renderLocalSky(){
     rows.sort((a,b)=> (b.vis-a.vis) || a.mag-b.mag);
     document.getElementById('planets-status').hidden=true;
     document.getElementById('planets-list').innerHTML=rows.map(r=>{
-      const badge=r.vis?' <span class="pill">látható</span>':(!r.naked?' <span class="pill" style="color:var(--mute)">halvány</span>':' <span class="pill" style="color:var(--mute)">horizont alatt</span>');
+      const badge=r.vis?' <span class="pill">'+t('planet_vis')+'</span>':(!r.naked?' <span class="pill" style="color:var(--mute)">'+t('planet_faint')+'</span>':' <span class="pill" style="color:var(--mute)">'+t('planet_below')+'</span>');
       const rs=[r.rise?('↑ '+fmtT(r.rise.date)):'', r.set?('↓ '+fmtT(r.set.date)):''].filter(Boolean).join(' · ');
       return `<li><div><span class="nm">${r.name}</span>${badge}<div class="sub mono" style="font-size:12px">${rs||'—'}</div></div>
         <div class="meta">${r.mag.toFixed(1)} <button type="button" class="term" data-term="magnitudó" aria-expanded="false">mag</button><br>${r.alt.toFixed(0)}° / ${compass(r.az)}</div></li>`;
     }).join('');
-    document.getElementById('planets-note').innerHTML=autoLinkTerms(`Állás polgári szürkület után ~30 perccel (${fmtT(checkAt)}). Szabad szemes határ kb. 6 magnitúdó (ideális égen).`);
+    document.getElementById('planets-note').innerHTML=autoLinkTerms(tf('planets_note',{time:fmtT(checkAt)}));
   }catch(e){
-    document.getElementById('planets-status').innerHTML='<span class="err">Bolygóadatok számolása sikertelen.</span>';
+    document.getElementById('planets-status').innerHTML='<span class="err">'+t('err_planets')+'</span>';
     console.error(e);
   }
   renderNightWindow();
@@ -814,24 +779,24 @@ function renderNightWindow(){
       if(best && (best.e-best.s)>=20*60e3){
         darkTxt=fmtT(best.s)+' – '+fmtT(new Date(+best.e+step));
         const hrs=((best.e-best.s+step)/3600e3).toFixed(1);
-        darkDetail=`Kb. ${hrs} óra csillagászati éjszaka Hold nélkül.`;
+        darkDetail=tf('dark_hrs',{hrs});
       } else {
-        darkTxt='nincs hosszú holdmentes ablak';
-        darkDetail='A Hold egész (vagy majdnem egész) csillagászati éjszaka a horizont felett van, vagy nincs teljes csill. éjszaka.';
+        darkTxt=t('dark_none');
+        darkDetail=t('dark_moonlit');
       }
       kvEl.hidden=false; status.hidden=true;
       kvEl.innerHTML=
-        cell('Csill. éjszaka', fmtT(nightStart)+' – '+fmtT(nightEnd), 'cyan', 'csill_szurk')+
-        cell('Legsötétebb ablak', darkTxt, 'em')+
-        cell('Hold megvilágítottság', sky.moonIll!=null?((sky.moonIll*100).toFixed(0)+' %'):'—', '', 'megvilagitottsag')+
-        cell('Felhőzet ma este', '…', '') ;
-      note.textContent=darkDetail+' Felhőzet: Open-Meteo órás előrejelzés.';
+        cell(t('night_astro'), fmtT(nightStart)+' – '+fmtT(nightEnd), 'cyan', 'csill_szurk')+
+        cell(t('darkest'), darkTxt, 'em')+
+        cell(t('moon_ill_night'), sky.moonIll!=null?((sky.moonIll*100).toFixed(0)+' %'):'—', '', 'megvilagitottsag')+
+        cell(t('clouds'), '…', '') ;
+      note.textContent=darkDetail+' '+t('clouds_src');
       fetchClouds(kvEl, note, nightStart, nightEnd);
     } else {
-      status.innerHTML='<span class="err">Csillagászati éjszaka nem határozható meg (nyári magas napállás?).</span>';
+      status.innerHTML='<span class="err">'+t('err_night_undef')+'</span>';
     }
   }catch(e){
-    status.innerHTML='<span class="err">Éjszakai ablak számolása sikertelen.</span>';
+    status.innerHTML='<span class="err">'+t('err_night')+'</span>';
     console.error(e);
   }
 }
@@ -853,12 +818,12 @@ async function fetchClouds(kvEl, note, nightStart, nightEnd){
     let cls='';
     if(avg!=null){ if(avg<=30) cls='ok'; else if(avg<=60) cls='warn'; else cls='bad'; }
     const cells=[...kvEl.querySelectorAll(':scope > div')];
-    if(cells[3]) cells[3].outerHTML=cell('Felhőzet (éjjel avg)', avg!=null?(avg+' % (min '+min+' / max '+max+')'):'nem elérhető', cls);
-    note.textContent=(note.textContent||'')+` Open-Meteo frissítve: ${new Date().toLocaleString('hu-HU',{timeZone:TZ,hour:'2-digit',minute:'2-digit'})}.`;
+    if(cells[3]) cells[3].outerHTML=cell(t('clouds_avg'), avg!=null?(avg+' % (min '+min+' / max '+max+')'):t('clouds_na'), cls);
+    note.textContent=(note.textContent||'')+' '+tf('clouds_updated',{time:new Date().toLocaleString(localeTag(),{timeZone:TZ,hour:'2-digit',minute:'2-digit'})});
   }catch(e){
     const cells=[...kvEl.querySelectorAll(':scope > div')];
-    if(cells[3]) cells[3].outerHTML=cell('Felhőzet (éjjel avg)', 'nem elérhető', 'bad');
-    note.innerHTML+=(note.innerHTML?' ':'')+'<span class="err">Felhőzet-előrejelzés betöltése sikertelen.</span>';
+    if(cells[3]) cells[3].outerHTML=cell(t('clouds_avg'), t('clouds_na'), 'bad');
+    note.innerHTML+=(note.innerHTML?' ':'')+'<span class="err">'+t('err_clouds')+'</span>';
   }
 }
 
@@ -876,7 +841,7 @@ async function renderAurora(){
       fetch('https://services.swpc.noaa.gov/products/summary/solar-wind-mag-field.json'),
       fetch('https://services.swpc.noaa.gov/products/noaa-scales.json')
     ]);
-    if(!kpRes.ok||!ovRes.ok) throw new Error('NOAA válasz hiba');
+    if(!kpRes.ok||!ovRes.ok) throw new Error(t('err_noaa'));
     const kpData=await kpRes.json();
     const fcData=fcRes.ok?await fcRes.json():null;
     const ovData=await ovRes.json();
@@ -916,14 +881,14 @@ async function renderAurora(){
     status.hidden=true; kvEl.hidden=false; bar.hidden=false;
     const kpCls=kpNow>=5?'bad':kpNow>=4?'warn':'cyan';
     kvEl.innerHTML=
-      cell('Kp index (aktuális)', kpNow.toFixed(2), kpCls, 'kp')+
-      cell('OVATION valószínűség', ovPct+' %'+(nearMax>ovPct?` (környék max ${nearMax} %)`:''), ovPct>=10?'warn':(ovPct>0?'cyan':''), 'ovation')+
-      cell('Szükséges Kp itt', needKp==null?'Kp 9+ (nagyon ritka)':('Kp ≥ '+needKp), needKp!=null&&needKp<=5?'ok':'warn', 'kp')+
-      cell('Geomágneses szélesség', gLat.toFixed(1)+'°', '', 'geomag')+
-      cell('Napszél sebesség', proton!=null?(proton+' km/s'):'—', '', 'napszel')+
-      cell('IMF Bz (GSM)', bz!=null?(bz+' nT'+(bz<0?' · délies':' · északias')):'—', '', 'bz')+
-      cell('Kp előrejelzés (max ~2 nap)', kpMaxFc!=null?kpMaxFc.toFixed(2):'—', kpMaxFc>=5?'warn':'', 'kp')+
-      cell('NOAA G-skála', `most: G${gNow??'?'}`+(gTomorrow?` · holnapután: G${gTomorrow}`:''), '', 'gskala');
+      cell(t('kp_now'), kpNow.toFixed(2), kpCls, 'kp')+
+      cell(t('ovation_pct'), ovPct+' %'+(nearMax>ovPct?(' '+tf('near_max',{n:nearMax})):''), ovPct>=10?'warn':(ovPct>0?'cyan':''), 'ovation')+
+      cell(t('need_kp'), needKp==null?t('need_kp_rare'):('Kp ≥ '+needKp), needKp!=null&&needKp<=5?'ok':'warn', 'kp')+
+      cell(t('geomag_lat'), gLat.toFixed(1)+'°', '', 'geomag')+
+      cell(t('solar_wind'), proton!=null?(proton+' km/s'):'—', '', 'napszel')+
+      cell(t('imf_bz'), bz!=null?(bz+' nT'+(bz<0?(' · '+t('bz_south')):(' · '+t('bz_north')))):'—', '', 'bz')+
+      cell(t('kp_forecast'), kpMaxFc!=null?kpMaxFc.toFixed(2):'—', kpMaxFc>=5?'warn':'', 'kp')+
+      cell(t('g_scale'), tf('g_now',{g:(gNow??'?')})+(gTomorrow?(' · '+tf('g_later',{g:gTomorrow})):''), '', 'gskala');
 
     bar.innerHTML=Array.from({length:10},(_,i)=>{
       let cls='';
@@ -933,13 +898,13 @@ async function renderAurora(){
 
     const ovTime=ovData['Forecast Time']||ovData['Observation Time']||'';
     note.innerHTML=autoLinkTerms(
-      `Forrás: NOAA SWPC. Kp időbélyeg: ${kpTime||'?'} UTC. OVATION előrejelzés: ${ovTime}. `+
+      tf('aurora_note_base',{kp:kpTime||'?', ov:ovTime})+' '+
       (needKp!=null
-        ? `A te helyeden (~${gLat.toFixed(1)}° geomágneses szélesség) a sarki fény tipikusan Kp ${needKp}+ mellett jelenhet meg a horizonton — Magyarországon ez ritka, erős geomágneses vihar kell hozzá.`
-        : `A te helyeden a sarki fény még extrém (Kp 9) viharban is csak ritkán, nagyon alacsonyan várható.`)+
-      ` Az OVATION modell az északi/déli oválra optimalizált; közép-európai ${ovPct} % érték önmagában nem jelent látható fényt.`);
+        ? tf('aurora_chance',{lat:gLat.toFixed(1), need:needKp})
+        : t('aurora_rare'))+' '+
+      tf('aurora_ovation_caveat',{pct:ovPct}));
   }catch(e){
-    status.innerHTML='<span class="err">Űridőjárás-adatok betöltése sikertelen (hálózat vagy NOAA szolgáltatás). Próbáld később.</span>';
+    status.innerHTML='<span class="err">'+t('err_aurora')+'</span>';
     console.error(e);
   }
 }
@@ -1043,12 +1008,12 @@ function updateISSLive(){
   if(!s){ box.innerHTML=''; return; }
   const over = s.el>0;
   box.innerHTML=
-    `<div class="chip">Most: <b>${s.lat.toFixed(1)}°, ${s.lon.toFixed(1)}°</b></div>`+
-    `<div class="chip">Magasság: <b>${s.alt.toFixed(0)} km</b></div>`+
-    `<div class="chip">Sebesség: <b>${Math.round(s.speed).toLocaleString('hu-HU')} km/h</b></div>`+
+    `<div class="chip">${t('iss_now')} <b>${s.lat.toFixed(1)}°, ${s.lon.toFixed(1)}°</b></div>`+
+    `<div class="chip">${t('iss_alt')} <b>${s.alt.toFixed(0)} km</b></div>`+
+    `<div class="chip">${t('iss_spd')} <b>${Math.round(s.speed).toLocaleString(localeTag())} km/h</b></div>`+
     `<div class="chip">${over
-      ? `Feletted: <b>${s.el.toFixed(0)}° / ${compass(s.az)}</b>`
-      : `<span style="color:var(--mute)">Jelenleg a horizont alatt</span>`}</div>`;
+      ? `${t('iss_overhead')} <b>${s.el.toFixed(0)}° / ${compass(s.az)}</b>`
+      : `<span style="color:var(--mute)">${t('iss_below_now')}</span>`}</div>`;
 }
 
 async function renderISS(){
@@ -1056,9 +1021,9 @@ async function renderISS(){
   const wrap=document.getElementById('iss-table-wrap');
   const note=document.getElementById('iss-note');
   try{
-    if(typeof satellite==='undefined') throw new Error('satellite.js hiányzik');
-    if(typeof Astronomy==='undefined') throw new Error('Astronomy Engine hiányzik');
-    status.hidden=false; status.textContent='TLE lekérése és áthaladások számolása…';
+    if(typeof satellite==='undefined') throw new Error(t('err_satjs'));
+    if(typeof Astronomy==='undefined') throw new Error(t('err_ae'));
+    status.hidden=false; status.textContent=t('iss_loading');
     wrap.hidden=true;
     const tle=await fetchISSTle();
     _issSatrec=satellite.twoline2satrec(tle.line1, tle.line2);
@@ -1071,11 +1036,11 @@ async function renderISS(){
     if(!passes.length){
       wrap.hidden=true;
       status.hidden=false;
-      status.textContent='A következő 10 napban nincs ≥10° max. magasságú, látható ISS-áthaladás erről a helyről.';
+      status.textContent=t('iss_none');
     } else {
       wrap.hidden=false;
       tb.innerHTML=passes.map(p=>{
-        const day=p.start.toLocaleDateString('hu-HU',{timeZone:TZ,month:'short',day:'numeric',weekday:'short'});
+        const day=p.start.toLocaleDateString(localeTag(),{timeZone:TZ,month:'short',day:'numeric',weekday:'short'});
         return `<tr>
           <td>${day}</td>
           <td class="mono">${fmtTs(p.start)} <span style="color:var(--mute)">${compass(p.startAz)}</span></td>
@@ -1088,14 +1053,11 @@ async function renderISS(){
     updateISSLive();
     if(_issTimer) clearInterval(_issTimer);
     _issTimer=setInterval(updateISSLive, 2000);
-    note.innerHTML=autoLinkTerms(
-      `Látható áthaladás: megfigyelő sötétben (Nap &lt; −6°), az ISS Nap által megvilágítva, max. magasság ≥ 10°. `+
-      `Forrás: ${tle.source} TLE (${tle.name.trim()}), pályaszámítás SGP4 (satellite.js). TLE korszak: ${_issEpochStr}. `+
-      `Az idők ±1 perc pontosságúak lehetnek a TLE korától függően.`);
+    note.innerHTML=autoLinkTerms(tf('iss_note',{src:tle.source, name:tle.name.trim(), epoch:_issEpochStr}));
   }catch(e){
     status.hidden=false;
-    status.innerHTML='<span class="err">ISS-adatok betöltése sikertelen. '+((e&&e.message)||'')+'</span>';
-    note.textContent='Próbáld meg később — a TLE-forrás átmenetileg nem elérhető.';
+    status.innerHTML='<span class="err">'+t('err_iss')+' '+((e&&e.message)||'')+'</span>';
+    note.textContent=t('err_iss_retry');
     console.error(e);
   }
 }
@@ -1110,13 +1072,14 @@ function loadSavedLocation(){
     return {
       lat:o.lat, lon:o.lon, elev: typeof o.elev==='number'?o.elev:120,
       name: (o.name && String(o.name).trim()) || formatCoords(o.lat,o.lon),
+      country_code: o.country_code || null,
       source:'saved'
     };
   }catch(_){ return null; }
 }
 function saveLocation(loc){
   localStorage.setItem(LOC_STORAGE_KEY, JSON.stringify({
-    lat:loc.lat, lon:loc.lon, elev:loc.elev||120, name:loc.name||''
+    lat:loc.lat, lon:loc.lon, elev:loc.elev||120, name:loc.name||'', country_code:loc.country_code||null
   }));
 }
 function clearSavedLocation(){ try{ localStorage.removeItem(LOC_STORAGE_KEY); }catch(_){} }
@@ -1151,8 +1114,9 @@ async function resolveLocation(){
   if(saved){ LOC=saved; return; }
   const geo=await browserGeo();
   if(geo.source==='geo'){
-    const name=await reverseGeocode(geo.lat, geo.lon) || formatCoords(geo.lat, geo.lon);
-    LOC={...geo, name};
+    const r=await reverseGeocode(geo.lat, geo.lon);
+    const name=(r&&r.name) || formatCoords(geo.lat, geo.lon);
+    LOC={...geo, name, country_code: countryFromReverse(r)};
   } else {
     LOC=geo;
   }
@@ -1169,10 +1133,12 @@ async function applyLocation(loc, {persist}={persist:true}){
   LOC={
     lat:loc.lat, lon:loc.lon, elev:loc.elev||120,
     name:loc.name || formatCoords(loc.lat, loc.lon),
+    country_code: loc.country_code || null,
     source: loc.source || (persist ? 'saved' : 'geo')
   };
   if(persist) saveLocation(LOC);
   refreshLocationDependent();
+  maybeOfferLangForLocation(LOC);
 }
 
 /* ---- Nominatim (search on submit; reverse on pick; ≤1 req/s) ---- */
@@ -1211,18 +1177,29 @@ function placeLabelFromNom(j){
 async function reverseGeocode(lat, lon){
   if(!(await probeNominatimCors())) return null;
   try{
-    const u=`https://nominatim.openstreetmap.org/reverse?lat=${lat.toFixed(5)}&lon=${lon.toFixed(5)}&format=json&zoom=12&accept-language=hu`;
+    const accept=(LANG_META[LANG]||LANG_META.hu).htmlLang||'en';
+    const u=`https://nominatim.openstreetmap.org/reverse?lat=${lat.toFixed(5)}&lon=${lon.toFixed(5)}&format=json&zoom=12&accept-language=${accept}`;
     const j=await nominatimFetch(u);
-    return placeLabelFromNom(j);
+    const name=placeLabelFromNom(j);
+    const cc=(j&&j.address&&j.address.country_code)?String(j.address.country_code).toUpperCase():null;
+    return name ? {name, country_code:cc} : (cc?{name:null, country_code:cc}:null);
   }catch(_){ return null; }
 }
+async function reverseGeocodeName(lat, lon){
+  const r=await reverseGeocode(lat, lon);
+  return r && r.name ? r.name : null;
+}
+function countryFromReverse(r){ return r && r.country_code ? r.country_code : null; }
+
 async function searchPlace(q){
   if(!(await probeNominatimCors())) return {ok:false, reason:'cors'};
-  const u=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&accept-language=hu`;
+  const u=`https://nominatim.openstreetmap.org/search?q=${encodeURIComponent(q)}&format=json&limit=1&addressdetails=1&accept-language=${(LANG_META[LANG]||LANG_META.hu).htmlLang||'en'}`;
   const arr=await nominatimFetch(u);
   if(!arr||!arr.length) return {ok:false, reason:'empty'};
   const hit=arr[0];
-  return {ok:true, lat:+hit.lat, lon:+hit.lon, name:placeLabelFromNom(hit)||hit.display_name||q};
+  const cc=(hit.address&&hit.address.country_code)?String(hit.address.country_code).toUpperCase():null;
+  // search endpoint may omit address; fetch reverse for country when saving
+  return {ok:true, lat:+hit.lat, lon:+hit.lon, name:placeLabelFromNom(hit)||hit.display_name||q, country_code:cc};
 }
 
 /* ---- Map picker (Leaflet lazy: tiles only when opened) ---- */
@@ -1235,7 +1212,7 @@ function loadLeaflet(){
     const s=document.createElement('script');
     s.src='vendor/leaflet.js';
     s.onload=()=>resolve();
-    s.onerror=()=>reject(new Error('Leaflet betöltése sikertelen'));
+    s.onerror=()=>reject(new Error(t('err_leaflet')));
     document.head.appendChild(s);
   });
   return _leafletLoading;
@@ -1257,8 +1234,11 @@ async function setPick(lat, lon, {name, reverse}={}){
   else if(reverse!==false){
     _pick.name=formatCoords(lat,lon);
     syncPickUI();
-    const n=await reverseGeocode(lat, lon);
-    if(n && Math.abs(_pick.lat-lat)<1e-9 && Math.abs(_pick.lon-lon)<1e-9) _pick.name=n;
+    const r=await reverseGeocode(lat, lon);
+    if(r && Math.abs(_pick.lat-lat)<1e-9 && Math.abs(_pick.lon-lon)<1e-9){
+      if(r.name) _pick.name=r.name;
+      if(r.country_code) _pick.country_code=r.country_code;
+    }
   } else if(!_pick.name) _pick.name=formatCoords(lat,lon);
   syncPickUI();
   if(_marker) _marker.setLatLng([lat,lon]);
@@ -1337,24 +1317,28 @@ document.getElementById('loc-modal').addEventListener('click', e=>{
   if(e.target.id==='loc-modal') closeLocPicker(true);
 });
 document.getElementById('loc-save').addEventListener('click', async()=>{
-  setLocStatus('Mentés…');
+  setLocStatus(t('loc_saving'));
   let name=_pick.name;
-  if(!name || name===formatCoords(_pick.lat,_pick.lon)){
-    name=await reverseGeocode(_pick.lat,_pick.lon) || formatCoords(_pick.lat,_pick.lon);
+  let cc=_pick.country_code||null;
+  if(!name || name===formatCoords(_pick.lat,_pick.lon) || !cc){
+    const r=await reverseGeocode(_pick.lat,_pick.lon);
+    if(r&&r.name) name=r.name;
+    if(r&&r.country_code) cc=r.country_code;
+    if(!name) name=formatCoords(_pick.lat,_pick.lon);
   }
-  await applyLocation({lat:_pick.lat, lon:_pick.lon, elev:LOC.elev||120, name, source:'saved'}, {persist:true});
+  await applyLocation({lat:_pick.lat, lon:_pick.lon, elev:LOC.elev||120, name, country_code:cc, source:'saved'}, {persist:true});
   closeLocPicker(true);
 });
 document.getElementById('loc-geo').addEventListener('click', async()=>{
-  setLocStatus('Hely lekérése…');
+  setLocStatus(t('loc_getting'));
   const geo=await browserGeo();
   if(geo.source!=='geo'){
-    setLocStatus(geo.source==='denied'?'A böngésző nem adta meg a helyet.':'Helymeghatározás sikertelen.', true);
+    setLocStatus(geo.source==='denied'?t('loc_denied'):t('loc_geo_fail'), true);
     return;
   }
   await setPick(geo.lat, geo.lon, {reverse:true});
   if(_map) _map.setView([geo.lat, geo.lon], 10);
-  setLocStatus('Saját hely beállítva — mentsd el a Mentés gombbal.');
+  setLocStatus(t('loc_geo_ok'));
 });
 document.getElementById('loc-auto').addEventListener('click', async()=>{
   clearSavedLocation();
@@ -1372,32 +1356,167 @@ document.getElementById('loc-search-form').addEventListener('submit', async(e)=>
   e.preventDefault();
   const q=document.getElementById('loc-q').value.trim();
   if(!q) return;
-  setLocStatus('Keresés…');
+  setLocStatus(t('loc_searching'));
   try{
     const r=await searchPlace(q);
     if(!r.ok){
-      setLocStatus(r.reason==='cors'?'Keresés nem elérhető.':'Nincs találat.', true);
+      setLocStatus(r.reason==='cors'?t('loc_search_cors'):t('loc_search_empty'), true);
       return;
     }
     await setPick(r.lat, r.lon, {name:r.name, reverse:false});
+    if(r.country_code) _pick.country_code=r.country_code;
+    else {
+      const rev=await reverseGeocode(r.lat, r.lon);
+      if(rev&&rev.country_code) _pick.country_code=rev.country_code;
+      if(rev&&rev.name && (!_pick.name || _pick.name===formatCoords(r.lat,r.lon))) _pick.name=rev.name;
+      syncPickUI();
+    }
     if(_map) _map.setView([r.lat, r.lon], 11);
-    setLocStatus('Találat: '+(r.name||formatCoords(r.lat,r.lon)));
+    setLocStatus(tf('loc_search_hit',{name:_pick.name||r.name||formatCoords(r.lat,r.lon)}));
   }catch(err){
-    setLocStatus('Keresési hiba.', true);
+    setLocStatus(t('loc_search_err'), true);
     console.error(err);
   }
 });
 
+
+/* ---- Language ---- */
+function fillLangSelect(){
+  const sel=document.getElementById('lang-sel');
+  if(!sel) return;
+  sel.innerHTML='';
+  for(const code of Object.keys(LANG_META)){
+    const o=document.createElement('option');
+    o.value=code; o.textContent=LANG_META[code].label;
+    if(code===LANG) o.selected=true;
+    sel.appendChild(o);
+  }
+}
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{
+    const k=el.getAttribute('data-i18n');
+    if(!k) return;
+    el.textContent=t(k);
+  });
+  document.querySelectorAll('[data-i18n-placeholder]').forEach(el=>{
+    el.setAttribute('placeholder', t(el.getAttribute('data-i18n-placeholder')));
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(el=>{
+    el.setAttribute('aria-label', t(el.getAttribute('data-i18n-aria')));
+  });
+  const ll=document.getElementById('lang-label');
+  if(ll) ll.textContent=t('lang_label');
+  const oy=document.getElementById('lang-offer-yes');
+  const on=document.getElementById('lang-offer-no');
+  if(oy) oy.textContent=t('lang_offer_yes');
+  if(on) on.textContent=t('lang_offer_no');
+}
+function hideLangOffer(){
+  const el=document.getElementById('lang-offer');
+  if(!el) return;
+  el.dataset.open='0'; el.hidden=true;
+}
+function showLangOffer(code){
+  const el=document.getElementById('lang-offer');
+  const msg=document.getElementById('lang-offer-msg');
+  if(!el||!msg||!LANG_META[code]) return;
+  msg.textContent=tf('lang_offer',{lang:LANG_META[code].label});
+  el.dataset.suggest=code;
+  el.dataset.open='1'; el.hidden=false;
+}
+function maybeOfferLangForLocation(loc){
+  const cc=loc && loc.country_code;
+  let sug=suggestLangFromCountry(cc);
+  if(!sug) return; // only offer from location country mapping
+  if(sug===LANG) { hideLangOffer(); return; }
+  const dismissed=loadOfferDismissed();
+  if(dismissed[sug]) return;
+  showLangOffer(sug);
+}
+function applyLang(code, {persist}={persist:true}){
+  if(!LANG_META[code]) code='hu';
+  LANG=code;
+  if(persist) saveLang(code);
+  document.documentElement.lang=(LANG_META[code]||LANG_META.hu).htmlLang;
+  document.title=t('title');
+  GLOSSARY=buildGlossary();
+  EV=getEV();
+  TYP=eventTypes();
+  fillLangSelect();
+  applyStaticI18n();
+  hideLangOffer();
+  closeTerm();
+  renderMoonCards();
+  updateLocLine();
+  renderLocalSky();
+  renderAurora();
+  renderISS();
+  document.querySelectorAll('[data-auto-terms]').forEach(el=>{
+    // re-link after textContent update from applyStaticI18n may have wiped links
+  });
+  // Re-apply auto terms on static labelled bits that use data-auto-terms
+  document.querySelectorAll('[data-auto-terms]').forEach(el=>{
+    const raw=el.textContent;
+    el.innerHTML=autoLinkTerms(raw);
+  });
+}
+function initLanguage(){
+  fillLangSelect();
+  const saved=loadSavedLang();
+  let initial='hu';
+  if(saved) initial=saved;
+  else {
+    const nav=suggestLangFromNavigator();
+    if(nav) initial=nav;
+  }
+  applyLang(initial, {persist:!!saved});
+  // If no saved lang and we later learn country, apply suggestion silently once via boot
+  const sel=document.getElementById('lang-sel');
+  if(sel) sel.addEventListener('change', ()=>{ applyLang(sel.value, {persist:true}); });
+  const oy=document.getElementById('lang-offer-yes');
+  const on=document.getElementById('lang-offer-no');
+  if(oy) oy.addEventListener('click', ()=>{
+    const code=document.getElementById('lang-offer').dataset.suggest;
+    hideLangOffer();
+    if(code) applyLang(code, {persist:true});
+  });
+  if(on) on.addEventListener('click', ()=>{
+    const code=document.getElementById('lang-offer').dataset.suggest;
+    if(code) dismissOffer(code);
+    hideLangOffer();
+  });
+}
+function syncLangFromLocationSilent(){
+  // First visit: no saved language → adopt country suggestion without offer
+  if(loadSavedLang()) return;
+  const sug=suggestLangFromCountry(LOC && LOC.country_code) || suggestLangFromNavigator();
+  if(sug && sug!==LANG) applyLang(sug, {persist:false});
+}
+
 async function bootLive(){
   updateLocLine();
   await resolveLocation();
+  // ensure country_code when possible
+  if(!LOC.country_code){
+    try{
+      const r=await reverseGeocode(LOC.lat, LOC.lon);
+      if(r&&r.country_code){
+        LOC.country_code=r.country_code;
+        if(r.name && (LOC.source==='geo'||LOC.source==='default')) LOC.name=r.name;
+      }
+    }catch(_){}
+  }
+  syncLangFromLocationSilent();
   updateLocLine();
   renderLocalSky();
   renderAurora();
   renderISS();
   document.querySelectorAll('[data-auto-terms]').forEach(el=>{ el.innerHTML=autoLinkTerms(el.textContent); });
+  // After location known, offer if saved lang differs from country suggestion
+  if(loadSavedLang()) maybeOfferLangForLocation(LOC);
 }
 
+initLanguage();
 renderMoonCards(); tick(); setInterval(tick,1000); setInterval(renderMoonCards,600000);
 bootLive();
 setInterval(()=>{renderLocalSky(); renderAurora();}, 10*60e3);
